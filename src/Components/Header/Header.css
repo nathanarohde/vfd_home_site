@@ -1,0 +1,63 @@
+.bannerBackground {
+  /* For IE 9 & older  */
+  background: #1e4363;
+  background: repeating-linear-gradient(
+    to right,
+    #1e4363,
+    #1e4363 50%,
+    #8a2d19 50%,
+    #8a2d19
+    );
+  z-index: 1;
+}
+
+.bannerBackground .Wrapper {
+  /* For IE 9 & older  */
+  background: #1e4363;
+  background: repeating-linear-gradient(
+    to right,
+    #1e4363,
+    #1e4363 12.5%,
+    #8a2d19 12.5%,
+    #8a2d19 25%
+  );
+  box-sizing: border-box;
+  height: 100%;
+  padding-top: 32px;
+}
+
+.bannerBackground h1 {
+  filter: drop-shadow(4px 5px 4px black);
+  color: #fcf2cb;
+  font-family: 'Smythe', 'open-sans', 'Arial', 'Verdana';
+  font-size: 64px;
+  letter-spacing: 3px;
+  margin: 0 0 0 32px;
+  text-align: left;
+}
+
+.emphasizeBannerTitle {
+  font-size: 175%;
+  letter-spacing: -2px;
+}
+
+.halfCircle {
+    background-color:#1e4363;
+    border-bottom-left-radius:100% 200%;
+    border-bottom-right-radius:100% 200%;
+    float:left;
+    filter: drop-shadow(4px 5px 8px black);
+    height:0px;
+    padding-bottom:2.5%;
+    width:12.5%;
+}
+
+.halfCircle:nth-child(odd) {
+    background-color: #8a2d19;
+}
+
+@media (min-width:600px) {
+  .bannerBackground {
+    height: 180px;
+  }
+}
