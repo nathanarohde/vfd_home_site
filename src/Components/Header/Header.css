@@ -27,7 +27,7 @@
 }
 
 .bannerBackground h1 {
-  filter: drop-shadow(4px 5px 4px black);
+  filter: drop-shadow(4px 5px 4px #0A1620);
   color: #fcf2cb;
   font-family: 'Smythe', 'open-sans', 'Arial', 'Verdana';
   font-size: 64px;
@@ -46,7 +46,7 @@
     border-bottom-left-radius:100% 200%;
     border-bottom-right-radius:100% 200%;
     float:left;
-    filter: drop-shadow(4px 5px 8px black);
+    filter: drop-shadow(4px 5px 12px #0A1620);
     height:0px;
     padding-bottom:2.5%;
     width:12.5%;
