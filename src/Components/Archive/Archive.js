@@ -2,7 +2,7 @@ import React from 'react'
 
 const archive = () => (
   <div>
-    archive
+    <p>archive</p>
   </div>
 )
 
