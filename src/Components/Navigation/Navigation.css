@@ -1,0 +1,14 @@
+nav.Wrapper {
+ margin: 48px 0 24px 0;
+}
+
+nav a {
+  color: #333;
+  font-family: 'Smythe', 'open-sans', 'Arial', 'Verdana';
+  font-size: 36px;
+  margin: 0 36px;
+}
+
+nav a:visited {
+  color: #333;
+}
