@@ -1,4 +1,5 @@
 import React, { Component, Suspense } from 'react'
+import axios from 'axios'
 import './Display.css'
 import Cartoon from '../../Components/Cartoon/Cartoon'
 import CartoonTotal from '../../Cartoons/Cartoons.json'
@@ -11,17 +12,24 @@ import CartoonTotal from '../../Cartoons/Cartoons.json'
 
 class Display extends Component {
   state = {
-    cartoons: 5,
-    mounted: false,
+    lastCartoon: 6,
+    firstMount: false,
     cartoon: ''
   }
 
   componentDidMount() {
-    // axios.get('https://github.com/nathanarohde/vfd_home_site/blob/master/src/Cartoons/6/Panels/1.png')
-    // .then(response => {
-    //   const cartoon
-    // })
-    // this.setState({ mounted: true })
+    if (this.state.firstMount === false ){
+      let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.state.lastCartoon + '/cartoon.json'
+      axios.get(url)
+      .then(response => {
+        this.setState({ cartoon: response.data})
+      })
+      .catch( error => {
+        console.log( error )
+      });
+      console.log(this.state.cartoon);
+      this.setState({ firstMount: true })
+    }
   }
 
   render () {
@@ -41,10 +49,13 @@ class Display extends Component {
       //     </Suspense>
       //   )
       // }
-
     return (
       <div className="displayField">
-        <Cartoon source={this.state.cartoons}/>
+        <div>
+          <h2>{ this.state.cartoon.title }</h2>
+          <p>{ this.state.cartoon.date }</p>
+        </div>
+        <Cartoon source={ this.state.lastCartoon }/>
       </div>
     )
   }
