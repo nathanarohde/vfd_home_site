@@ -12,24 +12,41 @@ import CartoonTotal from '../../Cartoons/Cartoons.json'
 
 class Display extends Component {
   state = {
-    lastCartoon: 6,
-    firstMount: false,
-    cartoon: ''
+    displayedCartoon: null,
+    lastCartoon: null,
+    firstMount: true,
+    cartoonData: ''
   }
 
   componentDidMount() {
-    if (this.state.firstMount === false ){
-      let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.state.lastCartoon + '/cartoon.json'
-      axios.get(url)
-      .then(response => {
-        this.setState({ cartoon: response.data})
-      })
-      .catch( error => {
-        console.log( error )
-      });
-      console.log(this.state.cartoon);
-      this.setState({ firstMount: true })
+    if (this.state.firstMount === true ){
+      axios.get('https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json')
+            .then( response => {
+              this.setState({ firstMount: false })
+              this.setState({ lastCartoon: response.data.lastCartoon })
+              this.setCurrentCartoon( response.data.lastCartoon )
+            })
+            .catch( error => {
+              console.log( error )
+            })
+            .finally( this.asyncGetCartoonData );
     }
+  }
+
+  setCurrentCartoon = ( currentCartoon ) => {
+    this.setState({ displayedCartoon: currentCartoon })
+  }
+
+  asyncGetCartoonData = ( ) => {
+    let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.state.displayedCartoon + '/cartoon.json';
+
+    axios.get(url)
+          .then( response => {
+            this.setState({ cartoonData: response.data })
+          })
+          .catch( error => {
+            console.log( error )
+          });
   }
 
   render () {
@@ -52,10 +69,12 @@ class Display extends Component {
     return (
       <div className="displayField">
         <div>
-          <h2>{ this.state.cartoon.title }</h2>
-          <p>{ this.state.cartoon.date }</p>
+          <h2>{ this.state.cartoonData.title }</h2>
+          <p>{ this.state.cartoonData.date }</p>
         </div>
-        <Cartoon source={ this.state.lastCartoon }/>
+        <Cartoon source={ this.state.displayedCartoon }/>
+        <button></button>
+        <button></button>
       </div>
     )
   }
