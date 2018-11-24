@@ -1,8 +1,10 @@
-import React, { Component, Suspense } from 'react'
+import React, { Component } from 'react'
 import axios from 'axios'
 import './Display.css'
+import TitleBox from '../../Components/TitleBox/TitleBox'
 import Cartoon from '../../Components/Cartoon/Cartoon'
-import CartoonTotal from '../../Cartoons/Cartoons.json'
+import Button from '../../Components/Button/Button'
+// import CartoonTotal from '../../Cartoons/Cartoons.json'
 // const LazyCartoon = React.lazy(() => import('../../Components/Cartoon/Cartoon'))
 // import asyncComponent from '../../hoc/asyncComponent'
 // const AsyncImage = asyncComponent(() => {
@@ -12,8 +14,8 @@ import CartoonTotal from '../../Cartoons/Cartoons.json'
 
 class Display extends Component {
   state = {
-    displayedCartoon: null,
-    lastCartoon: null,
+    displayedCartoon: 0,
+    lastCartoon: 0,
     firstMount: true,
     cartoonData: ''
   }
@@ -24,7 +26,7 @@ class Display extends Component {
             .then( response => {
               this.setState({ firstMount: false })
               this.setState({ lastCartoon: response.data.lastCartoon })
-              this.setCurrentCartoon( response.data.lastCartoon )
+              this.setState({ displayedCartoon: response.data.lastCartoon })
             })
             .catch( error => {
               console.log( error )
@@ -33,20 +35,36 @@ class Display extends Component {
     }
   }
 
-  setCurrentCartoon = ( currentCartoon ) => {
-    this.setState({ displayedCartoon: currentCartoon })
-  }
+  // componentDidUpdate() {
+  //   if (this.state.firstMount === false ){
+  //       this.asyncGetCartoonData();
+  //   }
+  // }
 
   asyncGetCartoonData = ( ) => {
     let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.state.displayedCartoon + '/cartoon.json';
+    // console.log(this.state.displayedCartoon);
 
     axios.get(url)
           .then( response => {
             this.setState({ cartoonData: response.data })
+            // console.log(this.state.cartoonData);
           })
           .catch( error => {
             console.log( error )
           });
+  }
+
+  perviousCartoon = () => {
+    this.setState({ displayedCartoon: this.state.displayedCartoon - 1 })
+    // this.asyncGetCartoonData();
+    // console.log(this.state.displayedCartoon)
+  }
+
+  nextCartoon = () => {
+    this.setState({ displayedCartoon: this.state.displayedCartoon + 1 })
+    // this.asyncGetCartoonData();
+    // console.log(this.state.displayedCartoon)
   }
 
   render () {
@@ -68,13 +86,20 @@ class Display extends Component {
       // }
     return (
       <div className="displayField">
-        <div>
-          <h2>{ this.state.cartoonData.title }</h2>
-          <p>{ this.state.cartoonData.date }</p>
-        </div>
-        <Cartoon source={ this.state.displayedCartoon }/>
-        <button></button>
-        <button></button>
+        { this.state.displayedCartoon !== 0 &&
+          <div>
+            <TitleBox title={ this.state.cartoonData.title } date={ this.state.cartoonData.date }/>
+            <Cartoon source={ this.state.displayedCartoon }/>
+          </div>
+        }
+        <Button disabled={ this.state.displayedCartoon <= 1 }
+                clicked={ this.perviousCartoon }>
+                Previous
+        </Button>
+        <Button disabled={ this.state.displayedCartoon === this.state.lastCartoon }
+                clicked={ this.nextCartoon }>
+                Next
+        </Button>
       </div>
     )
   }
