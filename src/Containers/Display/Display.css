@@ -1,12 +1,16 @@
 .displayField {
-  background-color: white;
   margin: 0 auto;
   max-width: 640px;
   padding: 24px 0;
   width: 100%;
 }
 
-.displayField img {
-  max-width: 600px;
-  margin: 0 auto;
+.displayField h2, .displayField p {
+  font-family: 'Average', serif;
+}
+
+.displayField h2 {
+  font-size: 40px;
+  font-weight: 700;
+  margin: .5rem 0;
 }
