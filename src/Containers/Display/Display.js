@@ -14,23 +14,18 @@ import Button from '../../Components/Button/Button'
 
 class Display extends Component {
   state = {
-    displayedCartoon: this.props.currentPage || 0,
+    displayedCartoon: 0,
     lastCartoon: 0,
     firstMount: true,
     cartoonData: ''
   }
 
   componentDidMount() {
-    // What to do with this prop?
-    // console.log( this.props.currentPage );
     if (this.state.firstMount === true ){
       axios.get('https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json')
             .then( response => {
               this.setState({ firstMount: false });
-              this.setState({ lastCartoon: response.data.lastCartoon });
-              if ( this.state.displayedCartoon === 0 ) this.setState({ displayedCartoon: response.data.lastCartoon });
-              // console.log( this)
-              // this.setState({ displayedCartoon: response.data.lastCartoon })
+              this.setState({ lastCartoon: response.data.lastCartoon }, () => this.setDisplayedCartoon());
             })
             .catch( error => {
               console.log( error )
@@ -39,11 +34,15 @@ class Display extends Component {
     }
   }
 
-  // componentDidUpdate() {
-  //   if (this.state.firstMount === false ){
-  //       this.asyncGetCartoonData();
-  //   }
-  // }
+  setDisplayedCartoon = ( ) => {
+    // if currentPage is less than last cartoon display currentPage
+    if ( this.state.lastCartoon > this.props.currentPage ) {
+      this.setState({ displayedCartoon: this.props.currentPage });
+    // else display the last cartoon
+    } else {
+      this.setState({ displayedCartoon: this.state.lastCartoon });
+    }
+  }
 
   asyncGetCartoonData = ( ) => {
     let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.state.displayedCartoon + '/cartoon.json';
