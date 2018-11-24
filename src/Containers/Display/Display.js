@@ -56,15 +56,11 @@ class Display extends Component {
   }
 
   perviousCartoon = () => {
-    this.setState({ displayedCartoon: this.state.displayedCartoon - 1 })
-    // this.asyncGetCartoonData();
-    // console.log(this.state.displayedCartoon)
+    this.setState({ displayedCartoon: this.state.displayedCartoon - 1 }, () => { this.asyncGetCartoonData() } )
   }
 
   nextCartoon = () => {
-    this.setState({ displayedCartoon: this.state.displayedCartoon + 1 })
-    // this.asyncGetCartoonData();
-    // console.log(this.state.displayedCartoon)
+    this.setState({ displayedCartoon: this.state.displayedCartoon + 1 }, () => { this.asyncGetCartoonData() } )
   }
 
   render () {
