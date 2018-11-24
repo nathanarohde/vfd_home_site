@@ -12,6 +12,7 @@ const layout = () => (
     <Navigation></Navigation>
     <Switch>
       <Route path="/archive" component={Archive} />
+      <Route path="/:id" component={Main} />
       <Route path="/" component={Main} />
     </Switch>
   </div>

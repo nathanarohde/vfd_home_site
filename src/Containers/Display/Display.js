@@ -14,19 +14,23 @@ import Button from '../../Components/Button/Button'
 
 class Display extends Component {
   state = {
-    displayedCartoon: 0,
+    displayedCartoon: this.props.currentPage || 0,
     lastCartoon: 0,
     firstMount: true,
     cartoonData: ''
   }
 
   componentDidMount() {
+    // What to do with this prop?
+    // console.log( this.props.currentPage );
     if (this.state.firstMount === true ){
       axios.get('https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json')
             .then( response => {
-              this.setState({ firstMount: false })
-              this.setState({ lastCartoon: response.data.lastCartoon })
-              this.setState({ displayedCartoon: response.data.lastCartoon })
+              this.setState({ firstMount: false });
+              this.setState({ lastCartoon: response.data.lastCartoon });
+              if ( this.state.displayedCartoon === 0 ) this.setState({ displayedCartoon: response.data.lastCartoon });
+              // console.log( this)
+              // this.setState({ displayedCartoon: response.data.lastCartoon })
             })
             .catch( error => {
               console.log( error )
@@ -43,12 +47,9 @@ class Display extends Component {
 
   asyncGetCartoonData = ( ) => {
     let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.state.displayedCartoon + '/cartoon.json';
-    // console.log(this.state.displayedCartoon);
-
     axios.get(url)
           .then( response => {
             this.setState({ cartoonData: response.data })
-            // console.log(this.state.cartoonData);
           })
           .catch( error => {
             console.log( error )
@@ -64,6 +65,7 @@ class Display extends Component {
   }
 
   render () {
+    // console.log(props);
     // let cartoon = `../../Cartoons/${this.state.cartoons}/Panels/1.png`
       // cartoons = this.state.cartoons.map(cartoon => {
       //   return (
