@@ -4,6 +4,7 @@ import './Display.css'
 import TitleBox from '../../Components/TitleBox/TitleBox'
 import Cartoon from '../../Components/Cartoon/Cartoon'
 import Button from '../../Components/Button/Button'
+import { Link } from 'react-router-dom';
 // import CartoonTotal from '../../Cartoons/Cartoons.json'
 // const LazyCartoon = React.lazy(() => import('../../Components/Cartoon/Cartoon'))
 // import asyncComponent from '../../hoc/asyncComponent'
@@ -38,9 +39,11 @@ class Display extends Component {
     // if currentPage is less than last cartoon display currentPage
     if ( this.state.lastCartoon > this.props.currentPage ) {
       this.setState({ displayedCartoon: this.props.currentPage });
+      // console.log(this.props.history);
     // else display the last cartoon
     } else {
       this.setState({ displayedCartoon: this.state.lastCartoon });
+      // console.log(this.props.history);
     }
   }
 
@@ -56,11 +59,15 @@ class Display extends Component {
   }
 
   perviousCartoon = () => {
-    this.setState({ displayedCartoon: this.state.displayedCartoon - 1 }, () => { this.asyncGetCartoonData() } )
+    this.setState({ displayedCartoon: this.state.displayedCartoon - 1 }, () => { this.asyncGetCartoonData() } );
+    // <Route path="/:id" exact component={Cartoon} />
   }
 
   nextCartoon = () => {
-    this.setState({ displayedCartoon: this.state.displayedCartoon + 1 }, () => { this.asyncGetCartoonData() } )
+    this.setState({ displayedCartoon: this.state.displayedCartoon + 1 }, () => { this.asyncGetCartoonData()
+                                                                                  // <Link to={`/${this.state.displayedCartoon}`}/>
+                                                                               } );
+    // <Route path="/:id" exact component={Cartoon} />
   }
 
   render () {
@@ -89,14 +96,21 @@ class Display extends Component {
             <Cartoon source={ this.state.displayedCartoon }/>
           </div>
         }
-        <Button disabled={ this.state.displayedCartoon <= 1 }
-                clicked={ this.perviousCartoon }>
-                Previous
-        </Button>
-        <Button disabled={ this.state.displayedCartoon === this.state.lastCartoon }
-                clicked={ this.nextCartoon }>
-                Next
-        </Button>
+        { this.state.displayedCartoon > 1 &&
+          <Button disabled={ this.state.displayedCartoon < 1 }
+                  clicked={ this.perviousCartoon }>
+            <Link to={`/${this.state.displayedCartoon - 1 }`}>
+              Previous
+            </Link>
+          </Button>
+        }
+        { this.state.displayedCartoon < this.state.lastCartoon  &&
+          <Button clicked={ this.nextCartoon }>
+            <Link to={`/${this.state.displayedCartoon + 1 }`}>
+              Next
+            </Link>
+          </Button>
+        }
       </div>
     )
   }
