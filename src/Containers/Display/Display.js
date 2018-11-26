@@ -16,8 +16,8 @@ import { Link } from 'react-router-dom';
 class Display extends Component {
   state = {
     displayedCartoon: 0,
-    lastCartoon: 0,
     firstMount: true,
+    lastCartoon: 0,
     cartoonData: ''
   }
 
@@ -39,11 +39,9 @@ class Display extends Component {
     // if currentPage is less than last cartoon display currentPage
     if ( this.state.lastCartoon > this.props.currentPage ) {
       this.setState({ displayedCartoon: this.props.currentPage });
-      // console.log(this.props.history);
     // else display the last cartoon
     } else {
       this.setState({ displayedCartoon: this.state.lastCartoon });
-      // console.log(this.props.history);
     }
   }
 
@@ -60,14 +58,10 @@ class Display extends Component {
 
   perviousCartoon = () => {
     this.setState({ displayedCartoon: this.state.displayedCartoon - 1 }, () => { this.asyncGetCartoonData() } );
-    // <Route path="/:id" exact component={Cartoon} />
   }
 
   nextCartoon = () => {
-    this.setState({ displayedCartoon: this.state.displayedCartoon + 1 }, () => { this.asyncGetCartoonData()
-                                                                                  // <Link to={`/${this.state.displayedCartoon}`}/>
-                                                                               } );
-    // <Route path="/:id" exact component={Cartoon} />
+    this.setState({ displayedCartoon: this.state.displayedCartoon + 1 }, () => { this.asyncGetCartoonData() } );
   }
 
   render () {
@@ -100,14 +94,14 @@ class Display extends Component {
           <Button disabled={ this.state.displayedCartoon < 1 }
                   clicked={ this.perviousCartoon }>
             <Link to={`/${this.state.displayedCartoon - 1 }`}>
-              Previous
+                Previous
             </Link>
           </Button>
         }
         { this.state.displayedCartoon < this.state.lastCartoon  &&
           <Button clicked={ this.nextCartoon }>
             <Link to={`/${this.state.displayedCartoon + 1 }`}>
-              Next
+                Next
             </Link>
           </Button>
         }
