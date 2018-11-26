@@ -57,11 +57,11 @@ class Display extends Component {
   }
 
   perviousCartoon = () => {
-    this.setState({ displayedCartoon: this.state.displayedCartoon - 1 }, () => { this.asyncGetCartoonData() } );
+    this.setState({ displayedCartoon: parseInt(this.state.displayedCartoon) - 1 }, () => { this.asyncGetCartoonData() } );
   }
 
   nextCartoon = () => {
-    this.setState({ displayedCartoon: this.state.displayedCartoon + 1 }, () => { this.asyncGetCartoonData() } );
+    this.setState({ displayedCartoon: parseInt(this.state.displayedCartoon) + 1 }, () => { this.asyncGetCartoonData() } );
   }
 
   render () {
@@ -93,14 +93,14 @@ class Display extends Component {
         { this.state.displayedCartoon > 1 &&
           <Button disabled={ this.state.displayedCartoon < 1 }
                   clicked={ this.perviousCartoon }>
-            <Link to={`/${this.state.displayedCartoon - 1 }`}>
+            <Link to={`/${parseInt(this.state.displayedCartoon) - 1 }`}>
                 Previous
             </Link>
           </Button>
         }
         { this.state.displayedCartoon < this.state.lastCartoon  &&
           <Button clicked={ this.nextCartoon }>
-            <Link to={`/${this.state.displayedCartoon + 1 }`}>
+            <Link to={`/${parseInt(this.state.displayedCartoon) + 1 }`}>
                 Next
             </Link>
           </Button>
