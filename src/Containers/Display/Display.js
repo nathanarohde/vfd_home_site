@@ -22,6 +22,11 @@ class Display extends Component {
   }
 
   componentDidMount() {
+    if (this.props.currentPage === undefined ){
+      // this.setState({ displayedCartoon: this.state.lastCartoon });
+      console.log( 'Did Mount is: ' + this.props.currentPage )
+    }
+
     if (this.state.firstMount === true ){
       axios.get('https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json')
             .then( response => {
@@ -32,6 +37,13 @@ class Display extends Component {
               console.log( error )
             })
             .finally( this.asyncGetCartoonData );
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.props.currentPage === undefined ){
+      // this.setState({ displayedCartoon: this.state.lastCartoon });
+      console.log( 'Did Update is: ' + this.props.currentPage )
     }
   }
 

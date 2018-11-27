@@ -31,9 +31,9 @@ class Archive extends Component {
   getThumbnails = () => {
     let thumbnails = []
 
-    for ( let i = 1; i <= this.state.lastCartoon; i++) {
+    for ( let i = this.state.lastCartoon; i > 0; i--) {
       thumbnails.push(
-        <Link to={`/${i}`}>
+        <Link key={ i } to={`/${i}`}>
           <Thumbnail key={ i } source={ i }/>
         </Link>
       )
