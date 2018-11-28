@@ -22,43 +22,45 @@ class Display extends Component {
   }
 
   componentDidMount() {
-    this.asyncGetCartoonData();
     // this.props.onGetLastCartoon(), () => console.log(this.props.lastCartoon);
     if (this.props.currentPage === undefined ){
       // this.setState({ displayedCartoon: this.state.lastCartoon });
       console.log( 'Did Mount is: ' + this.props.currentPage )
     }
 
-    // if (this.state.firstMount === true ){
-    //   axios.get('https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json')
-    //         .then( response => {
-    //           this.setState({ firstMount: false });
-    //           this.setState({ lastCartoon: response.data.lastCartoon }, () => this.setDisplayedCartoon());
-    //         })
-    //         .catch( error => {
-    //           console.log( error )
-    //         })
-    //         .finally( this.asyncGetCartoonData );
-    // }
+    if (this.state.firstMount === true ){
+      // axios.get('https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json')
+      //       .then( response => {
+      //         this.setState({ firstMount: false });
+            //   this.setState({ lastCartoon: response.data.lastCartoon }, () => this.setDisplayedCartoon());
+            // })
+            // .catch( error => {
+            //   console.log( error )
+            // })
+            // .finally( this.asyncGetCartoonData );
+    }
   }
 
   componentDidUpdate() {
-    console.log(this.props.lastCartoon);
+    // if (this.props.displayed !== 0){
+    //   this.asyncGetCartoonData();
+    // }
+
     if (this.props.currentPage === undefined ){
       // this.setState({ displayedCartoon: this.state.lastCartoon });
       console.log( 'Did Update is: ' + this.props.currentPage )
     }
   }
 
-  setDisplayedCartoon = ( ) => {
-    // if currentPage is less than last cartoon display currentPage
-    if ( this.state.lastCartoon > this.props.currentPage ) {
-      this.setState({ displayedCartoon: this.props.currentPage });
-    // else display the last cartoon
-    } else {
-      this.setState({ displayedCartoon: this.state.lastCartoon });
-    }
-  }
+  // setDisplayedCartoon = ( ) => {
+  //   // if currentPage is less than last cartoon display currentPage
+  //   if ( this.state.lastCartoon > this.props.currentPage ) {
+  //     this.setState({ displayedCartoon: this.props.currentPage });
+  //   // else display the last cartoon
+  //   } else {
+  //     this.setState({ displayedCartoon: this.state.lastCartoon });
+  //   }
+  // }
 
   asyncGetCartoonData = ( ) => {
     let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.props.displayedCartoon + '/cartoon.json';
@@ -72,11 +74,11 @@ class Display extends Component {
   }
 
   perviousCartoon = () => {
-    this.setState({ displayedCartoon: parseInt(this.state.displayedCartoon) - 1 }, () => { this.asyncGetCartoonData() } );
+    this.props.onDisplayPreviousCartoon();
   }
 
   nextCartoon = () => {
-    this.setState({ displayedCartoon: parseInt(this.state.displayedCartoon) + 1 }, () => { this.asyncGetCartoonData() } );
+    this.props.onDisplayNextCartoon();
   }
 
   render () {
@@ -100,30 +102,31 @@ class Display extends Component {
 
     return (
       <div className="displayField">
-          <TitleBox title={ this.state.cartoonData.title } date={ this.state.cartoonData.date }/>
+        { this.props.dispalyedCartoon !== 0 &&
           <div>
+            <TitleBox title={ this.state.cartoonData.title } date={ this.state.cartoonData.date }/>
             <Cartoon source={ this.props.displayedCartoon }/>
           </div>
+        }
+        { this.props.displayedCartoon > 1 &&
+          <Button disabled={ this.props.displayedCartoon < 1 }
+                  clicked={ this.perviousCartoon }>
+            <Link to={`/${parseInt(this.props.displayedCartoon) - 1 }`}>
+                Previous
+            </Link>
+          </Button>
+        }
+        { this.props.displayedCartoon < this.props.lastCartoon  &&
+          <Button clicked={ this.nextCartoon }>
+            <Link to={`/${parseInt(this.props.displayedCartoon) + 1 }`}>
+                Next
+            </Link>
+          </Button>
+        }
       </div>
     )
   }
 }
-
-// { this.state.displayedCartoon > 1 &&
-//   <Button disabled={ this.state.displayedCartoon < 1 }
-//           clicked={ this.perviousCartoon }>
-//     <Link to={`/${parseInt(this.props.displayedCartoon) - 1 }`}>
-//         Previous
-//     </Link>
-//   </Button>
-// }
-// { this.state.displayedCartoon < this.state.lastCartoon  &&
-//   <Button clicked={ this.nextCartoon }>
-//     <Link to={`/${parseInt(this.props.displayedCartoon) + 1 }`}>
-//         Next
-//     </Link>
-//   </Button>
-// }
 
 const mapStateToProps = state => {
   return {
@@ -134,7 +137,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onGetLastCartoon: () => dispatch(actions.getLastCartoon())
+    onDisplayPreviousCartoon: () => dispatch(actions.displayPreviousCartoon()),
+    onDisplayNextCartoon: () => dispatch(actions.displayNextCartoon())
+    // onSetDisplayedCartoon: () => dispatch(actions.setDisplayedCartoon())
   }
 }
 
