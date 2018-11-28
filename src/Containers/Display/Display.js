@@ -23,22 +23,25 @@ class Display extends Component {
   componentDidMount() {
     console.log("Component Did Mount");
     if ( this.props.startingPage !== undefined ){
-        this.props.onSetDisplayedCartoon(
-          parseInt(this.props.startingPage)
-        );
+      this.props.onSetDisplayedCartoon(
+        parseInt(this.props.startingPage)
+      )
     } else {
       this.props.onSetDisplayedCartoon(
         parseInt(this.props.lastCartoon)
-      );
+      )
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate( prevProps ) {
     console.log("Component Did Update");
     if ( this.props.startingPage === undefined ) {
       this.props.onSetDisplayedCartoon(
         parseInt(this.props.lastCartoon)
-      );
+      )
+    }
+    if ( prevProps.displayedCartoon !== this.props.displayedCartoon){
+      this.asyncGetCartoonData();
     }
   }
 
@@ -62,7 +65,6 @@ class Display extends Component {
   }
 
   render () {
-    // console.log(props);
     // let cartoon = `../../Cartoons/${this.state.cartoons}/Panels/1.png`
       // cartoons = this.state.cartoons.map(cartoon => {
       //   return (
@@ -82,8 +84,8 @@ class Display extends Component {
 
     return (
       <div className="displayField">
-        <TitleBox source={ this.props.displayedCartoon }/>
-        <Cartoon source={ this.props.displayedCartoon }/>
+        <TitleBox date={ this.state.cartoonData.date } title={ this.state.cartoonData.title }/>
+        <Cartoon source={ this.props.displayedCartoon } />
         { this.props.displayedCartoon > 1 &&
           <Button disabled={ this.props.displayedCartoon < 1 }
                   clicked={ this.perviousCartoon }>
@@ -106,8 +108,8 @@ class Display extends Component {
 
 const mapStateToProps = state => {
   return {
-    lastCartoon: state.lastCartoon,
-    displayedCartoon: state.displayedCartoon
+    displayedCartoon: state.displayedCartoon,
+    lastCartoon: state.lastCartoon
   }
 }
 
