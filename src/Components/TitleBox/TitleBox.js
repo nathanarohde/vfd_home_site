@@ -8,6 +8,7 @@ const titleBox = ( props ) => {
       <p>{ props.date }</p>
     </div>
   )
+  
 }
 
 export default titleBox;

@@ -21,26 +21,36 @@ class Display extends Component {
   }
 
   componentDidMount() {
-    console.log("Component Did Mount");
-    if ( this.props.startingPage !== undefined ){
+    // Necessary to make transitions between archive and display work
+    // Wrong cartoon will load if startingPage is out of parameters in URL bar
+      //  - This is fixed in update because Redux not available on Mount
+    if ( this.props.startingPage > 0 ) {
       this.props.onSetDisplayedCartoon(
+        // Starting page is a string and therefore must be parsed.
         parseInt(this.props.startingPage)
-      )
-    } else {
-      this.props.onSetDisplayedCartoon(
-        parseInt(this.props.lastCartoon)
-      )
+      );
     }
   }
 
   componentDidUpdate( prevProps ) {
-    console.log("Component Did Update");
-    if ( this.props.startingPage === undefined ) {
+    // Redux not available until component did update
+    // In these three if scenarios there is no applicable cartoon so it is set to lastCartoon
+    if ( this.props.startingPage === undefined ||
+        this.props.startingPage === 0 ||
+        this.props.startingPage > this.props.lastCartoon ){
+          this.props.onSetDisplayedCartoon(
+            this.props.lastCartoon
+          );
+    } else {
       this.props.onSetDisplayedCartoon(
-        parseInt(this.props.lastCartoon)
-      )
+        parseInt(this.props.startingPage)
+      );
     }
-    if ( prevProps.displayedCartoon !== this.props.displayedCartoon){
+
+    // Eliminates calls which will fail.
+    if ( prevProps.displayedCartoon !== this.props.displayedCartoon &&
+        this.props.displayedCartoon !== 0 &&
+        this.props.displayedCartoon <= this.props.lastCartoon ){
       this.asyncGetCartoonData();
     }
   }
@@ -84,8 +94,12 @@ class Display extends Component {
 
     return (
       <div className="displayField">
-        <TitleBox date={ this.state.cartoonData.date } title={ this.state.cartoonData.title }/>
-        <Cartoon source={ this.props.displayedCartoon } />
+        { this.props.lastCartoon > 0 &&
+          <div>
+            <TitleBox date={ this.state.cartoonData.date } title={ this.state.cartoonData.title }/>
+            <Cartoon source={ this.props.displayedCartoon } />
+          </div>
+        }
         { this.props.displayedCartoon > 1 &&
           <Button disabled={ this.props.displayedCartoon < 1 }
                   clicked={ this.perviousCartoon }>
