@@ -1,10 +1,17 @@
 import * as actionTypes from './actionTypes';
 import axios from 'axios';
 
-export const setLastCartoon = ( lastCartoon ) => {
+export const setLastCartoon = ( data ) => {
+  console.log(data.lastCartoon)
   return {
     type: actionTypes.SET_LASTCARTOON,
-    lastCartoon: lastCartoon
+    lastCartoon: data.lastCartoon
+  }
+}
+
+export const getLastCartoon = () => {
+  return {
+    type:actionTypes.GET_LASTCARTOON
   }
 }
 

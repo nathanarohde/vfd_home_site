@@ -12,11 +12,11 @@ import reducer from './Store/reducer';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const rootReducer = combineReducers({
-  reducer: reducer
-});
+// const rootReducer = combineReducers({
+//   reducer: reducer
+// });
 
-const store = createStore( rootReducer, composeEnhancers( applyMiddleware(thunk)));
+const store = createStore( reducer, composeEnhancers( applyMiddleware(thunk)));
 
 const app = (
   <Provider store={store}>

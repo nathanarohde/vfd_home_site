@@ -1,10 +1,13 @@
-import React, { Component } from 'react'
-import axios from 'axios'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import axios from 'axios';
+
 import './Display.css'
-import TitleBox from '../../Components/TitleBox/TitleBox'
-import Cartoon from '../../Components/Cartoon/Cartoon'
-import Button from '../../Components/Button/Button'
+import TitleBox from '../../Components/TitleBox/TitleBox';
+import Cartoon from '../../Components/Cartoon/Cartoon';
+import Button from '../../Components/Button/Button';
 import { Link } from 'react-router-dom';
+import * as actions from '../../Store/actions';
 // import CartoonTotal from '../../Cartoons/Cartoons.json'
 // const LazyCartoon = React.lazy(() => import('../../Components/Cartoon/Cartoon'))
 // import asyncComponent from '../../hoc/asyncComponent'
@@ -12,35 +15,35 @@ import { Link } from 'react-router-dom';
 //   return import('../../Components/Image/Image')
 // })
 
-
 class Display extends Component {
   state = {
-    displayedCartoon: 0,
     firstMount: true,
-    lastCartoon: 0,
     cartoonData: ''
   }
 
   componentDidMount() {
+    this.asyncGetCartoonData();
+    // this.props.onGetLastCartoon(), () => console.log(this.props.lastCartoon);
     if (this.props.currentPage === undefined ){
       // this.setState({ displayedCartoon: this.state.lastCartoon });
       console.log( 'Did Mount is: ' + this.props.currentPage )
     }
 
-    if (this.state.firstMount === true ){
-      axios.get('https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json')
-            .then( response => {
-              this.setState({ firstMount: false });
-              this.setState({ lastCartoon: response.data.lastCartoon }, () => this.setDisplayedCartoon());
-            })
-            .catch( error => {
-              console.log( error )
-            })
-            .finally( this.asyncGetCartoonData );
-    }
+    // if (this.state.firstMount === true ){
+    //   axios.get('https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json')
+    //         .then( response => {
+    //           this.setState({ firstMount: false });
+    //           this.setState({ lastCartoon: response.data.lastCartoon }, () => this.setDisplayedCartoon());
+    //         })
+    //         .catch( error => {
+    //           console.log( error )
+    //         })
+    //         .finally( this.asyncGetCartoonData );
+    // }
   }
 
   componentDidUpdate() {
+    console.log(this.props.lastCartoon);
     if (this.props.currentPage === undefined ){
       // this.setState({ displayedCartoon: this.state.lastCartoon });
       console.log( 'Did Update is: ' + this.props.currentPage )
@@ -58,7 +61,7 @@ class Display extends Component {
   }
 
   asyncGetCartoonData = ( ) => {
-    let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.state.displayedCartoon + '/cartoon.json';
+    let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.props.displayedCartoon + '/cartoon.json';
     axios.get(url)
           .then( response => {
             this.setState({ cartoonData: response.data })
@@ -94,32 +97,46 @@ class Display extends Component {
       //     </Suspense>
       //   )
       // }
+
     return (
       <div className="displayField">
-        { this.state.displayedCartoon !== 0 &&
+          <TitleBox title={ this.state.cartoonData.title } date={ this.state.cartoonData.date }/>
           <div>
-            <TitleBox title={ this.state.cartoonData.title } date={ this.state.cartoonData.date }/>
-            <Cartoon source={ this.state.displayedCartoon }/>
+            <Cartoon source={ this.props.displayedCartoon }/>
           </div>
-        }
-        { this.state.displayedCartoon > 1 &&
-          <Button disabled={ this.state.displayedCartoon < 1 }
-                  clicked={ this.perviousCartoon }>
-            <Link to={`/${parseInt(this.state.displayedCartoon) - 1 }`}>
-                Previous
-            </Link>
-          </Button>
-        }
-        { this.state.displayedCartoon < this.state.lastCartoon  &&
-          <Button clicked={ this.nextCartoon }>
-            <Link to={`/${parseInt(this.state.displayedCartoon) + 1 }`}>
-                Next
-            </Link>
-          </Button>
-        }
       </div>
     )
   }
 }
 
-export default Display;
+// { this.state.displayedCartoon > 1 &&
+//   <Button disabled={ this.state.displayedCartoon < 1 }
+//           clicked={ this.perviousCartoon }>
+//     <Link to={`/${parseInt(this.props.displayedCartoon) - 1 }`}>
+//         Previous
+//     </Link>
+//   </Button>
+// }
+// { this.state.displayedCartoon < this.state.lastCartoon  &&
+//   <Button clicked={ this.nextCartoon }>
+//     <Link to={`/${parseInt(this.props.displayedCartoon) + 1 }`}>
+//         Next
+//     </Link>
+//   </Button>
+// }
+
+const mapStateToProps = state => {
+  return {
+    lastCartoon: state.lastCartoon,
+    displayedCartoon: state.displayedCartoon
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onGetLastCartoon: () => dispatch(actions.getLastCartoon())
+  }
+}
+
+
+export default connect( mapStateToProps, mapDispatchToProps )( Display );
