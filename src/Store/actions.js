@@ -37,8 +37,7 @@ export const initLastCartoon = () => {
   return dispatch => {
     axios.get( 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json' )
         .then( response => {
-          dispatch( setLastCartoon(response.data.lastCartoon));
-          dispatch( setDisplayedCartoon(response.data.lastCartoon));
+          dispatch( setLastCartoon(response.data.lastCartoon) );
         })
         .catch( error => {
           console.log( error );
