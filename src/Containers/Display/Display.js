@@ -13,7 +13,7 @@ class Display extends Component {
   // scrollCounter set here because scroll event listener set in mount cannot access Redux state updates
   state = {
     cartoonData: '',
-    displayedCartoons: [ ],
+    displayedCartoons: {},
     height: 0,
   }
 
@@ -42,6 +42,7 @@ class Display extends Component {
     ){
       this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
       this.props.onSetCurrentDisplayedCartoon( this.props.currentDisplayedCartoon + 1 )
+      // this.asyncGetCartoonData( this.props.currentDisplayedCartoon + 1 );
     }
   }
 
@@ -56,11 +57,13 @@ class Display extends Component {
           this.props.onSetCurrentDisplayedCartoon(
             this.props.lastCartoon
           );
+          // this.asyncGetCartoonData( this.prop.lastCartoon );
           this.setDisplayedCartoons( this.props.lastCartoon );
       } else {
         this.props.onSetCurrentDisplayedCartoon(
           parseInt( this.props.startingPage )
         );
+        // this.asyncGetCartoonData( this.props.startingPage );
         this.setDisplayedCartoons( this.props.startingPage );
       }
     }
@@ -75,24 +78,25 @@ class Display extends Component {
   }
 
   setDisplayedCartoons = ( cartoon ) => {
-    if (!this.state.displayedCartoons.includes(cartoon)){
-      this.setState( prevState => ({
-        displayedCartoons: [...prevState.displayedCartoons, cartoon]
-      }))
+    if (!(cartoon in this.state.displayedCartoons)){
+      let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + cartoon + '/cartoon.json';
+      axios.get( url )
+      .then( response => {
+        this.setState( prevState => ({
+          displayedCartoons: {
+            ...prevState.displayedCartoons,
+            [cartoon]: {
+                date: response.data.date,
+                title: response.data.title
+            }
+          }
+        }))
+      })
+      .catch( error => {
+        console.log('Error');
+      })
     }
-    // this.asyncGetCartoonData();
   };
-
-  asyncGetCartoonData = () => {
-    let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.props.currentDisplayedCartoon + '/cartoon.json';
-    axios.get(url)
-          .then( response => {
-            this.setState({ cartoonData: response.data })
-          })
-          .catch( error => {
-            console.log( error )
-          });
-  }
 
   perviousCartoon = () => {
     this.props.onDisplayPreviousCartoon();
@@ -102,20 +106,41 @@ class Display extends Component {
     this.props.onDisplayNextCartoon();
   }
 
+  //   // <TitleBox date={ data.date } title={ data.title } />
+  //   return (
+  //     <div key={cartoon}>
+  //       <Cartoon key={ cartoon } source={ cartoon } />
+  //     </div>
+  //   )
+  // })
+    // <TitleBox date={ this.state.cartoonData.date } title={ this.state.cartoonData.title }/>
+    // console.log(this.props.currentDisplayedCartoon);
+    // return (
+    //   <div key={cartoon}>
+    //     <p>cartoon</p>
+    //   </div>
+    // )
+
+    // cartoons = this.state.displayedCartoons.map(cartoon => {
+    // };
+
   render () {
     let cartoons = <p>Site is loading.</p>
 
-    // console.log(this.props.currentDisplayedCartoon);
-    cartoons = this.state.displayedCartoons.map(cartoon => {
-      return (
-        <Cartoon key={ cartoon } source={ cartoon } />
-      )
-    })
-      // <TitleBox date={ this.state.cartoonData.date } title={ this.state.cartoonData.title }/>
+    if (Object.keys(this.state.displayedCartoons).length){
+        // console.log(this.state.displayedCartoons);
+        cartoons = Object.keys(this.state.displayedCartoons).map( cartoon => {
+          return (
+            <div key={cartoon}>
+              <TitleBox date={ this.state.displayedCartoons[cartoon].date } title={ this.state.displayedCartoons[cartoon].title }/>
+              <Cartoon key={ cartoon } source={ cartoon } />
+            </div>
+          )
+        })
+    }
+
     return (
       <div id="displayField">
-        { this.state.displayedCartoons }
-
         { cartoons }
 
         { this.props.currentDisplayedCartoon > 1 &&
