@@ -8,10 +8,10 @@ export const setLastCartoon = ( data ) => {
   }
 }
 
-export const setDisplayedCartoon = ( data ) => {
+export const setCurrentDisplayedCartoon = ( data ) => {
   return {
-    type: actionTypes.SET_DISPLAYEDCARTOON,
-    displayedCartoon: data
+    type: actionTypes.SET_CURRENT_DISPLAYED_CARTOONS,
+    currentDisplayedCartoon: data
   }
 }
 

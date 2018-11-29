@@ -8,27 +8,43 @@ import Cartoon from '../../Components/Cartoon/Cartoon';
 import Button from '../../Components/Button/Button';
 import { Link } from 'react-router-dom';
 import * as actions from '../../Store/actions';
-// import CartoonTotal from '../../Cartoons/Cartoons.json'
-// const LazyCartoon = React.lazy(() => import('../../Components/Cartoon/Cartoon'))
-// import asyncComponent from '../../hoc/asyncComponent'
-// const AsyncImage = asyncComponent(() => {
-//   return import('../../Components/Image/Image')
-// })
 
 class Display extends Component {
+  // scrollCounter set here because scroll event listener set in mount cannot access Redux state updates
   state = {
-    cartoonData: ''
+    scrollCounter: 1,
+    cartoonData: '',
+    displayedCartoons: [ ],
+    height: 0
   }
 
   componentDidMount() {
+
+    window.addEventListener('scroll', this.handleScroll);
     // Necessary to make transitions between archive and display work
     // Wrong cartoon will load if startingPage is out of parameters in URL bar
       //  - This is fixed in update because Redux not available on Mount
     if ( this.props.startingPage > 0 ) {
-      this.props.onSetDisplayedCartoon(
+      this.props.onSetCurrentDisplayedCartoon(
         // Starting page is a string and therefore must be parsed.
         parseInt(this.props.startingPage)
       );
+    }
+
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
+
+  handleScroll = ( event ) => {
+    // this.props.currentDisplayedCartoon does not update because it is initialized on mount and cannot access Redux updates
+    if ( ( this.props.currentDisplayedCartoon + this.state.scrollCounter - 1 ) < this.props.lastCartoon &&
+      Math.floor(document.documentElement.scrollHeight - document.documentElement.scrollTop) === Math.ceil(document.documentElement.clientHeight)
+    ){
+      this.props.onSetCurrentDisplayedCartoon( this.props.currentDisplayedCartoon + this.state.scrollCounter )
+      this.setDisplayedCartoons( this.props.currentDisplayedCartoon + this.state.scrollCounter )
+      this.setState({scrollCounter: this.state.scrollCounter + 1 })
     }
   }
 
@@ -38,25 +54,35 @@ class Display extends Component {
     if ( this.props.startingPage === undefined ||
         this.props.startingPage === 0 ||
         this.props.startingPage > this.props.lastCartoon ){
-          this.props.onSetDisplayedCartoon(
+          this.props.onSetCurrentDisplayedCartoon(
             this.props.lastCartoon
           );
     } else {
-      this.props.onSetDisplayedCartoon(
+      this.props.onSetCurrentDisplayedCartoon(
         parseInt(this.props.startingPage)
       );
     }
 
     // Eliminates calls which will fail.
-    if ( prevProps.displayedCartoon !== this.props.displayedCartoon &&
-        this.props.displayedCartoon !== 0 &&
-        this.props.displayedCartoon <= this.props.lastCartoon ){
+    if ( prevProps.currentDisplayedCartoon !== this.props.currentDisplayedCartoon &&
+        this.props.currentDisplayedCartoon !== 0 &&
+        this.props.currentDisplayedCartoon <= this.props.lastCartoon ){
+      this.setDisplayedCartoons( this.props.currentDisplayedCartoon );
       this.asyncGetCartoonData();
     }
+
   }
 
-  asyncGetCartoonData = ( ) => {
-    let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.props.displayedCartoon + '/cartoon.json';
+  setDisplayedCartoons = ( cartoon ) => {
+    if (!this.state.displayedCartoons.includes(cartoon)){
+      this.setState( prevState => ({
+        displayedCartoons: [...prevState.displayedCartoons, cartoon]
+      }))
+    }
+  };
+
+  asyncGetCartoonData = () => {
+    let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + this.props.currentDisplayedCartoon + '/cartoon.json';
     axios.get(url)
           .then( response => {
             this.setState({ cartoonData: response.data })
@@ -75,42 +101,33 @@ class Display extends Component {
   }
 
   render () {
-    // let cartoon = `../../Cartoons/${this.state.cartoons}/Panels/1.png`
-      // cartoons = this.state.cartoons.map(cartoon => {
-      //   return (
-      //     // <AsyncImage key={cartoon} source={cartoon} />
-      //   )
-      // });
+    let cartoons = <p>Site is loading.</p>
 
-                      // { cartoons }
-      // {
-      //   this.state.mounted && (
-      //     <Suspense fallback={<div>...Loading</div>}>
-      //       <LazyCartoon source={ cartoon }>
-      //       </LazyCartoon>
-      //     </Suspense>
-      //   )
-      // }
-
+    if ( this.props.lastCartoon > 0 ){
+      cartoons = this.state.displayedCartoons.map(cartoon => {
+        return (
+          <Cartoon key={ cartoon } source={ cartoon } />
+        )
+      })
+    }
+      // <TitleBox date={ this.state.cartoonData.date } title={ this.state.cartoonData.title }/>
     return (
-      <div className="displayField">
-        { this.props.lastCartoon > 0 &&
-          <div>
-            <TitleBox date={ this.state.cartoonData.date } title={ this.state.cartoonData.title }/>
-            <Cartoon source={ this.props.displayedCartoon } />
-          </div>
-        }
-        { this.props.displayedCartoon > 1 &&
-          <Button disabled={ this.props.displayedCartoon < 1 }
+      <div id="displayField">
+        { this.state.displayedCartoons }
+
+        { cartoons }
+
+        { this.props.currentDisplayedCartoon > 1 &&
+          <Button disabled={ this.props.currentDisplayedCartoon < 1 }
                   clicked={ this.perviousCartoon }>
-            <Link to={`/${parseInt(this.props.displayedCartoon) - 1 }`}>
+            <Link to={`/${parseInt(this.props.currentDisplayedCartoon) - 1 }`}>
                 Previous
             </Link>
           </Button>
         }
-        { this.props.displayedCartoon < this.props.lastCartoon  &&
+        { this.props.currentDisplayedCartoon < this.props.lastCartoon  &&
           <Button clicked={ this.nextCartoon }>
-            <Link to={`/${parseInt(this.props.displayedCartoon) + 1 }`}>
+            <Link to={`/${parseInt(this.props.currentDisplayedCartoon) + 1 }`}>
                 Next
             </Link>
           </Button>
@@ -122,7 +139,7 @@ class Display extends Component {
 
 const mapStateToProps = state => {
   return {
-    displayedCartoon: state.displayedCartoon,
+    currentDisplayedCartoon: state.currentDisplayedCartoon,
     lastCartoon: state.lastCartoon
   }
 }
@@ -131,7 +148,7 @@ const mapDispatchToProps = dispatch => {
   return {
     onDisplayPreviousCartoon: () => dispatch(actions.displayPreviousCartoon()),
     onDisplayNextCartoon: () => dispatch(actions.displayNextCartoon()),
-    onSetDisplayedCartoon: (startingPage) => dispatch(actions.setDisplayedCartoon(startingPage))
+    onSetCurrentDisplayedCartoon: (currentCartoon) => dispatch(actions.setCurrentDisplayedCartoon(currentCartoon))
   }
 }
 
