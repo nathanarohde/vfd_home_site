@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
+import chevron_first from '../../Assets/chevron-first.svg';
+import chevron_up from '../../Assets/chevron-up.svg';
+import chevron_down from '../../Assets/chevron-down.svg';
+
 import './Display.css'
 import TitleBox from '../../Components/TitleBox/TitleBox';
 import Cartoon from '../../Components/Cartoon/Cartoon';
@@ -52,7 +56,7 @@ class Display extends Component {
     if ( this.props.currentDisplayedCartoon === 0 ){
       if (
         this.props.startingPage === undefined ||
-        this.props.startingPage === 0 ||
+        this.props.startingPage <= 0 ||
         this.props.startingPage > this.props.lastCartoon ){
           this.props.onSetCurrentDisplayedCartoon(
             this.props.lastCartoon
@@ -98,6 +102,10 @@ class Display extends Component {
     }
   };
 
+  firstCartoon = () => {
+    this.props.onSetCurrentDisplayedCartoon(1);
+  }
+
   perviousCartoon = () => {
     this.props.onDisplayPreviousCartoon();
   }
@@ -106,58 +114,51 @@ class Display extends Component {
     this.props.onDisplayNextCartoon();
   }
 
-  //   // <TitleBox date={ data.date } title={ data.title } />
-  //   return (
-  //     <div key={cartoon}>
-  //       <Cartoon key={ cartoon } source={ cartoon } />
-  //     </div>
-  //   )
-  // })
-    // <TitleBox date={ this.state.cartoonData.date } title={ this.state.cartoonData.title }/>
-    // console.log(this.props.currentDisplayedCartoon);
-    // return (
-    //   <div key={cartoon}>
-    //     <p>cartoon</p>
-    //   </div>
-    // )
-
-    // cartoons = this.state.displayedCartoons.map(cartoon => {
-    // };
-
   render () {
     let cartoons = <p>Site is loading.</p>
 
     if (Object.keys(this.state.displayedCartoons).length){
-        // console.log(this.state.displayedCartoons);
-        cartoons = Object.keys(this.state.displayedCartoons).map( cartoon => {
-          return (
-            <div key={cartoon}>
-              <TitleBox date={ this.state.displayedCartoons[cartoon].date } title={ this.state.displayedCartoons[cartoon].title }/>
-              <Cartoon key={ cartoon } source={ cartoon } />
-            </div>
-          )
-        })
+      cartoons = Object.keys(this.state.displayedCartoons).map( cartoon => {
+        return (
+          <div key={cartoon}>
+            <TitleBox date={ this.state.displayedCartoons[cartoon].date } title={ this.state.displayedCartoons[cartoon].title }/>
+            <Cartoon key={ cartoon } source={ cartoon } />
+          </div>
+        )
+      })
     }
 
     return (
       <div id="displayField">
         { cartoons }
-
-        { this.props.currentDisplayedCartoon > 1 &&
-          <Button disabled={ this.props.currentDisplayedCartoon < 1 }
-                  clicked={ this.perviousCartoon }>
-            <Link to={`/${parseInt(this.props.currentDisplayedCartoon) - 1 }`}>
-                Previous
-            </Link>
-          </Button>
-        }
-        { this.props.currentDisplayedCartoon < this.props.lastCartoon  &&
-          <Button clicked={ this.nextCartoon }>
-            <Link to={`/${parseInt(this.props.currentDisplayedCartoon) + 1 }`}>
-                Next
-            </Link>
-          </Button>
-        }
+        <div className="buttonFixedContainer">
+          <div className="buttonBox">
+            { this.props.currentDisplayedCartoon !== 1 &&
+              <Button
+                clicked={ this.firstCartoon }>
+                <Link to={`/${ 1 }`}>
+                  <img src={ chevron_first } alt="Previous Cartoon"/>
+                </Link>
+              </Button>
+            }
+            { this.props.currentDisplayedCartoon > 1 &&
+              <Button
+                clicked={ this.perviousCartoon }>
+                <Link to={`/${parseInt(this.props.currentDisplayedCartoon) - 1 }`}>
+                  <img src={ chevron_up } alt="Previous Cartoon"/>
+                </Link>
+              </Button>
+            }
+            { this.props.currentDisplayedCartoon < this.props.lastCartoon  &&
+              <Button
+                clicked={ this.nextCartoon }>
+                <Link to={`/${parseInt(this.props.currentDisplayedCartoon) + 1 }`}>
+                  <img src={ chevron_down } alt="Next Cartoon"/>
+                </Link>
+              </Button>
+            }
+          </div>
+        </div>
       </div>
     )
   }

@@ -2,6 +2,7 @@
   margin: 0 auto;
   max-width: 640px;
   padding: 24px 0;
+  position: relative;
   width: 100%;
 }
 
@@ -13,4 +14,25 @@
   font-size: 40px;
   font-weight: 700;
   margin: .5rem 0;
+}
+
+.buttonFixedContainer {
+  width: 100%;
+  position: fixed;
+  bottom: 35%;
+  left: 0;
+}
+
+.buttonBox {
+  margin: 0 auto;
+  max-width: 688px;
+}
+
+.buttonBox button  {
+  background-color: white;
+  border: 1px solid #1e4363;
+  clear: right;
+  display: block;
+  float: right;
+  opacity: .8;
 }
