@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import axios from 'axios';
 
 import chevron_first from '../../Assets/chevron-first.svg';
@@ -45,8 +46,10 @@ class Display extends Component {
       Math.floor(document.documentElement.scrollHeight - document.documentElement.scrollTop) === Math.ceil(document.documentElement.clientHeight)
     ){
       this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
-      this.props.onSetCurrentDisplayedCartoon( this.props.currentDisplayedCartoon + 1 )
-      // this.asyncGetCartoonData( this.props.currentDisplayedCartoon + 1 );
+      this.props.onDisplayNextCartoon()
+      this.props.history.push(`/${ parseInt(this.props.currentDisplayedCartoon)}`);
+      // `/${parseInt(this.props.currentDisplayedCartoon) + 1 }`
+      // this.props.onSetCurrentDisplayedCartoon( this.props.currentDisplayedCartoon + 1 )
     }
   }
 
@@ -138,15 +141,19 @@ class Display extends Component {
 
   nextCartoon = () => {
 
-    let target= this.refs.displayField;
-    console.log(target.offsetTop + target.offsetHeight);
+    let target = this.refs[`${parseInt(this.props.currentDisplayedCartoon)}`];
+    let targetHeight = target.scrollHeight
+    targetHeight += parseInt(window.getComputedStyle(target).getPropertyValue('margin-top'));
+    targetHeight += parseInt(window.getComputedStyle(target).getPropertyValue('margin-bottom'));
 
     this.promise( this.props.onDisplayNextCartoon() )
     .then(
-      window.scrollTo({
-        top: target.offsetTop + target.offsetHeight,
-        behavior: 'auto'
-      })
+      setTimeout( function() {
+        window.scrollTo({
+          top: target.offsetTop + targetHeight,
+          behavior: 'auto'
+        })
+      }, 500)
     );
 
   }
@@ -163,7 +170,7 @@ class Display extends Component {
     if (Object.keys(this.state.displayedCartoons).length){
       cartoons = Object.keys(this.state.displayedCartoons).map( cartoon => {
         return (
-          <div key={cartoon}>
+          <div ref={cartoon} key={cartoon}>
             <TitleBox date={ this.state.displayedCartoons[cartoon].date } title={ this.state.displayedCartoons[cartoon].title }/>
             <Cartoon key={ cartoon } source={ cartoon } />
           </div>
@@ -223,4 +230,4 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default connect( mapStateToProps, mapDispatchToProps )( Display );
+export default withRouter( connect( mapStateToProps, mapDispatchToProps )( Display ) );
