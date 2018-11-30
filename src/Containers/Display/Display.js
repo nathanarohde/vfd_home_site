@@ -103,15 +103,37 @@ class Display extends Component {
   };
 
   firstCartoon = () => {
-    this.props.onSetCurrentDisplayedCartoon(1);
+    let target= this.refs.displayField;
+    
+    this.promise(  this.props.onSetCurrentDisplayedCartoon(1) )
+    .then( target.animate({ scrollTop: 0 }) );
+    // let target= this.refs.displayField;
+    // let promise = new Promise( function() {
+      // this.props.onSetCurrentDisplayedCartoon(1);
+    // })
+    // promise.then( target.animate({ scrollTop: 0 }) );
   }
 
   perviousCartoon = () => {
-    this.props.onDisplayPreviousCartoon();
+    let target= this.refs.displayField;
+
+    this.promise(this.props.onDisplayPreviousCartoon())
+    .then( target.animate({ scrollTop: 0 }) );
+    // let target= this.refs.displayField;
+    // let promise = new Promise ( function() {
+      // this.props.onDisplayPreviousCartoon();
+    // })
+    // promise.then( target.animate({ scrollTop: 0 }) );
   }
 
   nextCartoon = () => {
     this.props.onDisplayNextCartoon();
+  }
+
+  promise = ( importedFunction ) => {
+    return new Promise(function(resolve, importedFunction){
+      resolve( importedFunction );
+    })
   }
 
   render () {
@@ -129,7 +151,7 @@ class Display extends Component {
     }
 
     return (
-      <div id="displayField">
+      <div id="displayField" ref="displayField">
         { cartoons }
         <div className="buttonFixedContainer">
           <div className="buttonBox">
