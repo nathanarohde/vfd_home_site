@@ -82,6 +82,7 @@ class Display extends Component {
   }
 
   setDisplayedCartoons = ( cartoon ) => {
+
     if (!(cartoon in this.state.displayedCartoons)){
       let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + cartoon + '/cartoon.json';
       axios.get( url )
@@ -100,34 +101,54 @@ class Display extends Component {
         console.log('Error');
       })
     }
+
   };
 
   firstCartoon = () => {
+
     let target= this.refs.displayField;
-    
+
     this.promise(  this.props.onSetCurrentDisplayedCartoon(1) )
-    .then( target.animate({ scrollTop: 0 }) );
-    // let target= this.refs.displayField;
-    // let promise = new Promise( function() {
-      // this.props.onSetCurrentDisplayedCartoon(1);
-    // })
-    // promise.then( target.animate({ scrollTop: 0 }) );
+    .then(
+      setTimeout( function() {
+        window.scrollTo({
+          top: target.offsetTop,
+          behavior: 'auto'
+        })
+      }, 500)
+    );
+
   }
 
   perviousCartoon = () => {
+
     let target= this.refs.displayField;
 
-    this.promise(this.props.onDisplayPreviousCartoon())
-    .then( target.animate({ scrollTop: 0 }) );
-    // let target= this.refs.displayField;
-    // let promise = new Promise ( function() {
-      // this.props.onDisplayPreviousCartoon();
-    // })
-    // promise.then( target.animate({ scrollTop: 0 }) );
+    this.promise( this.props.onDisplayPreviousCartoon() )
+    .then(
+      setTimeout( function() {
+        window.scrollTo({
+          top: target.offsetTop,
+          behavior: 'auto'
+        })
+      }, 500)
+    );
+
   }
 
   nextCartoon = () => {
-    this.props.onDisplayNextCartoon();
+
+    let target= this.refs.displayField;
+    console.log(target.offsetTop + target.offsetHeight);
+
+    this.promise( this.props.onDisplayNextCartoon() )
+    .then(
+      window.scrollTo({
+        top: target.offsetTop + target.offsetHeight,
+        behavior: 'auto'
+      })
+    );
+
   }
 
   promise = ( importedFunction ) => {
