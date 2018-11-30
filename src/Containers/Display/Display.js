@@ -118,7 +118,7 @@ class Display extends Component {
           top: target.offsetTop,
           behavior: 'auto'
         })
-      }, 500), this.setRoute()
+      }, 500), this.setRoute( 1 )
     );
 
   }
@@ -129,10 +129,10 @@ class Display extends Component {
 
     if (target === 0) {
       this.promise( this.props.onDisplayPreviousCartoon() )
-      .then( this.scrollToContainerTop(container), this.setRoute() );
+      .then( this.scrollToContainerTop(container), this.setRoute( parseInt(this.props.currentDisplayedCartoon) - 1) )
     } else {
       this.promise( this.props.onDisplayPreviousCartoon() )
-      .then( this.scrollToCartoonTop(target, container), this.setRoute() );
+      .then( this.scrollToCartoonTop(target, container), this.setRoute( parseInt(this.props.currentDisplayedCartoon) - 1) )
     }
   }
 
@@ -168,8 +168,9 @@ class Display extends Component {
     );
   }
 
-  setRoute = () => {
-    this.props.history.push(`/${ parseInt(this.props.currentDisplayedCartoon)}`);
+  setRoute = ( target ) => {
+    console.log(target);
+    this.props.history.push(`/${ target }`);
   }
 
   promise = ( importedFunction ) => {
