@@ -47,7 +47,7 @@ class Display extends Component {
     ){
       this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
       this.props.onDisplayNextCartoon()
-      this.props.history.push(`/${ parseInt(this.props.currentDisplayedCartoon)}`);
+      this.setRoute();
       // `/${parseInt(this.props.currentDisplayedCartoon) + 1 }`
       // this.props.onSetCurrentDisplayedCartoon( this.props.currentDisplayedCartoon + 1 )
     }
@@ -118,44 +118,58 @@ class Display extends Component {
           top: target.offsetTop,
           behavior: 'auto'
         })
-      }, 500)
+      }, 500), this.setRoute()
     );
 
   }
 
   perviousCartoon = () => {
+    let container = this.refs.displayField;
+    let target = this.refs[`${parseInt(this.props.currentDisplayedCartoon) - 1 }`] || 0;
 
-    let target= this.refs.displayField;
+    if (target === 0) {
+      this.promise( this.props.onDisplayPreviousCartoon() )
+      .then( this.scrollToContainerTop(container), this.setRoute() );
+    } else {
+      this.promise( this.props.onDisplayPreviousCartoon() )
+      .then( this.scrollToCartoonTop(target, container), this.setRoute() );
+    }
+  }
 
-    this.promise( this.props.onDisplayPreviousCartoon() )
-    .then(
-      setTimeout( function() {
-        window.scrollTo({
-          top: target.offsetTop,
-          behavior: 'auto'
-        })
-      }, 500)
-    );
+  scrollToCartoonTop = (target, container) => {
+    setTimeout( function() {
+      window.scrollTo({
+        top: target.offsetTop + container.offsetTop,
+        behavior: 'auto'
+      });
+    }, 200);
+  }
 
+  scrollToContainerTop = (container) => {
+    setTimeout( function() {
+      window.scrollTo({
+        top: container.offsetTop,
+        behavior: 'auto'
+      });
+    }, 200);
   }
 
   nextCartoon = () => {
-
-    let target = this.refs[`${parseInt(this.props.currentDisplayedCartoon)}`];
-    let targetHeight = target.scrollHeight
-    targetHeight += parseInt(window.getComputedStyle(target).getPropertyValue('margin-top'));
-    targetHeight += parseInt(window.getComputedStyle(target).getPropertyValue('margin-bottom'));
-
+    let container = this.refs.displayField;
+    let target= this.refs[`${parseInt(this.props.currentDisplayedCartoon)}`];
     this.promise( this.props.onDisplayNextCartoon() )
     .then(
       setTimeout( function() {
         window.scrollTo({
-          top: target.offsetTop + targetHeight,
+          top: target.offsetTop + target.scrollHeight + container.offsetTop,
           behavior: 'auto'
         })
-      }, 500)
+      }, 200)
     );
+  }
 
+  setRoute = () => {
+    this.props.history.push(`/${ parseInt(this.props.currentDisplayedCartoon)}`);
   }
 
   promise = ( importedFunction ) => {
