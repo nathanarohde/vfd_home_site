@@ -4,7 +4,7 @@ import Display from '../../Containers/Display/Display'
 const main = (props) => {
   return (
     <main className="Wrapper">
-      <Display startingPage={ props.match.params.id }/>
+      <Display/>
     </main>
   )
 }

@@ -17,23 +17,14 @@ import * as actions from '../../Store/actions';
 class Display extends Component {
   // scrollCounter set here because scroll event listener set in mount cannot access Redux state updates
   state = {
-    cartoonData: '',
     displayedCartoons: {},
     height: 0,
+    scrollHistory: 0,
+    currentCartoonBottom: 0
   }
 
   componentDidMount() {
-
     window.addEventListener('scroll', this.handleScroll);
-    // Necessary to make transitions between archive and display work
-    // Wrong cartoon will load if startingPage is out of parameters in URL bar
-      //  - This is fixed in update because Redux not available on Mount
-    if ( this.props.startingPage > 0 ) {
-      this.setDisplayedCartoons( this.props.startingPage );
-      this.props.onSetCurrentDisplayedCartoon( parseInt(this.props.startingPage) );
-      // Starting page is a string and therefore must be parsed.
-    }
-
   }
 
   componentWillUnmount() {
@@ -41,16 +32,64 @@ class Display extends Component {
   }
 
   handleScroll = ( event ) => {
-    // this.props.currentDisplayedCartoon does not update because it is initialized on mount and cannot access Redux updates
-    if ( this.props.currentDisplayedCartoon < this.props.lastCartoon &&
-      Math.floor(document.documentElement.scrollHeight - document.documentElement.scrollTop) === Math.ceil(document.documentElement.clientHeight)
-    ){
-      this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
-      this.props.onDisplayNextCartoon()
-      this.setRoute();
-      // `/${parseInt(this.props.currentDisplayedCartoon) + 1 }`
-      // this.props.onSetCurrentDisplayedCartoon( this.props.currentDisplayedCartoon + 1 )
+    // Check direction of scroll X
+    // if down add more cartoons X
+    // if new cartoon set new route
+    // let scrollHeight = document.documentElement.offsetHeight - document.documentElement.scrollHeight - document.documentElement.scrollTop;
+    let scrollHeight = document.documentElement.offsetHeight + ( document.documentElement.scrollTop - document.documentElement.scrollHeight)
+    let currentDisplayedCartoon = this.props.currentDisplayedCartoon;
+    // - document.documentElement.scrollTop;
+    // let scrollHeight = document.documentElement.scrollHeight - document.documentElement.offsetHeight;
+
+    // console.log(this.refs.displayField.scrollTop);
+
+    if (scrollHeight < this.state.scrollHistory){
+      // Up
+      if ( currentDisplayedCartoon !== 1 &&
+           this.refs[`${currentDisplayedCartoon}`] !== undefined &&
+           (scrollHeight + 100) < (document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight) &&
+           (`${currentDisplayedCartoon - 1}` in this.state.displayedCartoons)
+         ){
+           this.promise(this.props.onDisplayPreviousCartoon())
+           .then(this.setRoute(this.props.currentDisplayedCartoon));
+
+           // console.log( `${currentDisplayedCartoon - 1}` in this.state.displayedCartoons );
+           // Find if displayed cartoons contains previous cartoon
+            // If so change route
+
+         // (this.refs[`${ this.props.currentDisplayedCartoon }`]).offsetTop > this.refs.displayField.scrollHeight ){
+           console.log( 'Scroll Height: ' + scrollHeight );
+           console.log( 'Container - Cartoon Height ' + (document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight )  )
+           console.log( 'Display Cartoon Height ' + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight)
+           console.log( 'Document.DocumentElement Offset Height: ' + document.documentElement.offsetHeight  );
+           // + this.refs.displayField.offsetTop
+           // console.log((this.refs[`${ this.props.currentDisplayedCartoon }`]).offsetTop + this.refs.displayField.offsetTop + (this.refs[`${ this.props.currentDisplayedCartoon }`]).scrollHeight);
+           // console.log((this.refs[`${ this.props.currentDisplayedCartoon }`]).scrollHeight)
+           // console.log( (this.refs[`${ this.props.currentDisplayedCartoon }`]).offsetTop + this.refs.displayField.offsetTop  );
+           // console.log( this.refs.displayField.scrollHeight )
+           // this.promise(this.props.onDisplayPreviousCartoon())
+           // .then(this.setRoute(this.props.currentDisplayedCartoon));
+         }
+      // console.log(document.documentElement.scrollHeight);
+      // console.log(this.refs.displayField.offsetTop);
+    } else {
+      // Down
+      if (
+        this.props.currentDisplayedCartoon < this.props.lastCartoon &&
+        Math.floor(document.documentElement.scrollHeight - document.documentElement.scrollTop) === Math.ceil(document.documentElement.clientHeight)
+        // && !(`${currentDisplayedCartoon + 1}` in this.state.displayedCartoons)
+      ){
+        this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
+        this.promise(this.props.onDisplayNextCartoon())
+        .then(this.setRoute(this.props.currentDisplayedCartoon));
+      }
+      // else {
+      //   this.promise(this.props.onDisplayNextCartoon())
+      //   .then(this.setRoute(this.props.currentDisplayedCartoon));
+      // }
     }
+    this.setState({scrollHistory: scrollHeight});
+    // adds cartoons does not check current position of elements
   }
 
   componentDidUpdate( prevProps ) {
@@ -58,20 +97,19 @@ class Display extends Component {
     // In these three if scenarios there is no applicable cartoon so it is set to lastCartoon
     if ( this.props.currentDisplayedCartoon === 0 ){
       if (
-        this.props.startingPage === undefined ||
-        this.props.startingPage <= 0 ||
-        this.props.startingPage > this.props.lastCartoon ){
+        parseInt(this.props.match.params.id) === undefined ||
+        parseInt(this.props.match.params.id) <= 0 ||
+        parseInt(this.props.match.params.id) > this.props.lastCartoon ||
+        isNaN(this.props.match.params.id)
+       ){
           this.props.onSetCurrentDisplayedCartoon(
             this.props.lastCartoon
           );
-          // this.asyncGetCartoonData( this.prop.lastCartoon );
           this.setDisplayedCartoons( this.props.lastCartoon );
+          this.setRoute(this.props.lastCartoon);
       } else {
-        this.props.onSetCurrentDisplayedCartoon(
-          parseInt( this.props.startingPage )
-        );
-        // this.asyncGetCartoonData( this.props.startingPage );
-        this.setDisplayedCartoons( this.props.startingPage );
+        this.props.onSetCurrentDisplayedCartoon( parseInt(this.props.match.params.id) );
+        this.setDisplayedCartoons( parseInt(this.props.match.params.id) );
       }
     }
 
@@ -79,13 +117,11 @@ class Display extends Component {
     if ( prevProps.currentDisplayedCartoon !== this.props.currentDisplayedCartoon &&
         this.props.currentDisplayedCartoon !== 0 &&
         this.props.currentDisplayedCartoon <= this.props.lastCartoon ){
-      this.setDisplayedCartoons( this.props.currentDisplayedCartoon );
+          this.setDisplayedCartoons( this.props.currentDisplayedCartoon );
     }
-
   }
 
   setDisplayedCartoons = ( cartoon ) => {
-
     if (!(cartoon in this.state.displayedCartoons)){
       let url = 'https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/' + cartoon + '/cartoon.json';
       axios.get( url )
@@ -104,7 +140,6 @@ class Display extends Component {
         console.log('Error');
       })
     }
-
   };
 
   firstCartoon = () => {
@@ -125,14 +160,14 @@ class Display extends Component {
 
   perviousCartoon = () => {
     let container = this.refs.displayField;
-    let target = this.refs[`${parseInt(this.props.currentDisplayedCartoon) - 1 }`] || 0;
+    let target = this.refs[`${ this.props.currentDisplayedCartoon - 1 }`] || 0;
 
     if (target === 0) {
       this.promise( this.props.onDisplayPreviousCartoon() )
-      .then( this.scrollToContainerTop(container), this.setRoute( parseInt(this.props.currentDisplayedCartoon) - 1) )
+      .then( this.scrollToContainerTop(container), this.setRoute( this.props.currentDisplayedCartoon - 1) )
     } else {
       this.promise( this.props.onDisplayPreviousCartoon() )
-      .then( this.scrollToCartoonTop(target, container), this.setRoute( parseInt(this.props.currentDisplayedCartoon) - 1) )
+      .then( this.scrollToCartoonTop(target, container), this.setRoute( this.props.currentDisplayedCartoon - 1) )
     }
   }
 
@@ -156,7 +191,7 @@ class Display extends Component {
 
   nextCartoon = () => {
     let container = this.refs.displayField;
-    let target= this.refs[`${parseInt(this.props.currentDisplayedCartoon)}`];
+    let target= this.refs[`${ this.props.currentDisplayedCartoon }`];
     this.promise( this.props.onDisplayNextCartoon() )
     .then(
       setTimeout( function() {
@@ -166,6 +201,8 @@ class Display extends Component {
         })
       }, 200)
     );
+      console.log('scroll doesnt set routes properly, next cartoon doesnt position next loads well')
+      // should add place holding container
   }
 
   setRoute = ( target ) => {
@@ -209,7 +246,7 @@ class Display extends Component {
             { this.props.currentDisplayedCartoon > 1 &&
               <Button
                 clicked={ this.perviousCartoon }>
-                <Link to={`/${parseInt(this.props.currentDisplayedCartoon) - 1 }`}>
+                <Link to={`/${ this.props.currentDisplayedCartoon - 1 }`}>
                   <img src={ chevron_up } alt="Previous Cartoon"/>
                 </Link>
               </Button>
@@ -217,7 +254,7 @@ class Display extends Component {
             { this.props.currentDisplayedCartoon < this.props.lastCartoon  &&
               <Button
                 clicked={ this.nextCartoon }>
-                <Link to={`/${parseInt(this.props.currentDisplayedCartoon) + 1 }`}>
+                <Link to={`/${ this.props.currentDisplayedCartoon + 1 }`}>
                   <img src={ chevron_down } alt="Next Cartoon"/>
                 </Link>
               </Button>
