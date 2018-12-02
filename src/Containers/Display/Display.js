@@ -23,6 +23,11 @@ class Display extends Component {
 
   componentDidMount() {
     window.addEventListener('scroll', _.throttle(this.handleScroll, 500));
+    // Necessary for Archive to work properly
+    if ( parseInt(this.props.match.params.id) > 0 ) {
+      this.setDisplayedCartoons( parseInt(this.props.match.params.id) );
+      this.props.onSetCurrentDisplayedCartoon( parseInt(this.props.match.params.id) );
+    }
   }
 
   componentWillUnmount() {
@@ -45,9 +50,14 @@ class Display extends Component {
       } else {
         // Down
         // For cartoons that don't exist
+        // console.log(this.props.currentDisplayedCartoon);
+        // console.log( this.refs.displayField.offsetTop );
+        console.log( this.refs.displayField.offsetHeight - ( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop ) )
+        console.log(Math.ceil( scrollHeight ) + ' ' + Math.ceil( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop ));
         if ( this.props.currentDisplayedCartoon < this.props.lastCartoon
           && !( this.props.currentDisplayedCartoon + 1 in this.state.displayedCartoons )
-          &&  Math.ceil( scrollHeight ) > Math.ceil( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop )
+          &&  Math.ceil( scrollHeight + 150 )
+              > Math.ceil( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop )
         ){
           this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
           this.promise(this.props.onDisplayNextCartoon())

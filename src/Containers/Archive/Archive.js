@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import Thumbnail from '../../Components/Thumbnail/Thumbnail';
 import axios from 'axios';
 import './Archive.css'
 import { Link } from 'react-router-dom';
-// import asyncComponent from '../../hoc/asyncComponent'
-// const AsyncThumbnail = asyncComponent(() => {
-//   return import('../../Components/Thumbnail/Thumbnail')
-// })
 
 class Archive extends Component {
   state = {
@@ -24,7 +22,6 @@ class Archive extends Component {
             .catch( error => {
               console.log( error )
             })
-            // .finally( this.getThumbnails );
     }
   }
 
@@ -53,4 +50,17 @@ class Archive extends Component {
   }
 }
 
-export default Archive;
+const mapStateToProps = state => {
+  return {
+    currentDisplayedCartoon: state.currentDisplayedCartoon,
+    lastCartoon: state.lastCartoon
+  }
+}
+
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     onSetCurrentDisplayedCartoon: (currentCartoon) => dispatch(actions.setCurrentDisplayedCartoon(currentCartoon))
+//   }
+// }
+// , mapDispatchToProps
+export default withRouter( connect(mapStateToProps) (Archive) );
