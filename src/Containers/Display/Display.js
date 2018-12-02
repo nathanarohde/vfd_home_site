@@ -22,7 +22,7 @@ class Display extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', _.throttle(this.handleScroll, 50));
+    window.addEventListener('scroll', _.throttle(this.handleScroll, 200));
     // Necessary for Archive to work properly
     if ( parseInt(this.props.match.params.id) > 0 ) {
       this.setDisplayedCartoons( parseInt(this.props.match.params.id) );
@@ -40,10 +40,10 @@ class Display extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', _.throttle(this.handleScroll, 50));
+    window.removeEventListener('scroll', _.throttle(this.handleScroll, 200));
   }
 
-  handleScroll = ( event ) => {
+  handleScroll = () => {
     let scrollHeight = document.documentElement.offsetHeight + ( document.documentElement.scrollTop - document.documentElement.scrollHeight)
 
     if ( Object.keys(this.state.displayedCartoons).length ) {
@@ -144,7 +144,7 @@ class Display extends Component {
           top: target.offsetTop,
           behavior: 'auto'
         })
-      }, 500), this.setRoute( 1 )
+      }, 200), this.setRoute( 1 )
     );
   }
 
@@ -158,7 +158,7 @@ class Display extends Component {
         top: target.offsetTop + container.offsetTop,
         behavior: 'auto'
       })
-    }, 50), this.setRoute( this.props.currentDisplayedCartoon - 1)
+    }, 200), this.setRoute( this.props.currentDisplayedCartoon - 1)
     );
   }
 
@@ -172,7 +172,7 @@ class Display extends Component {
           top: target.offsetTop + target.scrollHeight + container.offsetTop,
           behavior: 'auto'
         })
-      }, 50), this.setRoute( this.props.currentDisplayedCartoon + 1 )
+      }, 200), this.setRoute( this.props.currentDisplayedCartoon + 1 )
     );
   }
 
