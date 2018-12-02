@@ -22,12 +22,13 @@ class Display extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', _.throttle(this.handleScroll, 500));
+    window.addEventListener('scroll', _.throttle(this.handleScroll, 50));
     // Necessary for Archive to work properly
     if ( parseInt(this.props.match.params.id) > 0 ) {
       this.setDisplayedCartoons( parseInt(this.props.match.params.id) );
       this.props.onSetCurrentDisplayedCartoon( parseInt(this.props.match.params.id) );
     } else {
+      // Redux not available until update
       axios.get('https://raw.githubusercontent.com/nathanarohde/vfd_home_site/master/src/Cartoons/Cartoons.json')
       .then( response => {
         this.setDisplayedCartoons( response.data.lastCartoon );
@@ -39,7 +40,7 @@ class Display extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', _.throttle(this.handleScroll, 500));
+    window.removeEventListener('scroll', _.throttle(this.handleScroll, 50));
   }
 
   handleScroll = ( event ) => {
@@ -156,7 +157,7 @@ class Display extends Component {
         top: target.offsetTop + container.offsetTop,
         behavior: 'auto'
       })
-    }, 100), this.setRoute( this.props.currentDisplayedCartoon - 1)
+    }, 50), this.setRoute( this.props.currentDisplayedCartoon - 1)
     );
   }
 
@@ -170,7 +171,7 @@ class Display extends Component {
           top: target.offsetTop + target.scrollHeight + container.offsetTop,
           behavior: 'auto'
         })
-      }, 200), this.setRoute( this.props.currentDisplayedCartoon + 1 )
+      }, 50), this.setRoute( this.props.currentDisplayedCartoon + 1 )
     );
   }
 
