@@ -51,6 +51,7 @@ class Display extends Component {
         // Up
         if ( this.props.currentDisplayedCartoon !== 1
            && this.props.currentDisplayedCartoon - 1 in this.state.displayedCartoons
+           && this.refs[`${ this.props.currentDisplayedCartoon }`] !== undefined
            && ( scrollHeight + 100 < this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
          ){
           this.promise(this.props.onDisplayPreviousCartoon())
