@@ -135,16 +135,13 @@ class Display extends Component {
     let target = this.refs[`${ this.props.currentDisplayedCartoon - 1 }`] || 0;
 
     this.promise( this.props.onDisplayPreviousCartoon() )
-    .then( this.scrollToCartoonTop(target, container), this.setRoute( this.props.currentDisplayedCartoon - 1) )
-  }
-
-  scrollToCartoonTop = (target, container) => {
-    setTimeout( function() {
+    .then( setTimeout( function() {
       window.scrollTo({
         top: target.offsetTop + container.offsetTop,
         behavior: 'auto'
-      });
-    }, 100);
+      })
+    }, 100), this.setRoute( this.props.currentDisplayedCartoon - 1)
+    );
   }
 
   nextCartoon = () => {
@@ -157,7 +154,7 @@ class Display extends Component {
           top: target.offsetTop + target.scrollHeight + container.offsetTop,
           behavior: 'auto'
         })
-      }, 200)
+      }, 200), this.setRoute( this.props.currentDisplayedCartoon + 1 )
     );
   }
 
