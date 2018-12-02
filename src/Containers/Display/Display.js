@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import axios from 'axios';
+import _ from 'lodash';
 
 import chevron_first from '../../Assets/chevron-first.svg';
 import chevron_up from '../../Assets/chevron-up.svg';
@@ -18,89 +19,106 @@ class Display extends Component {
   // scrollCounter set here because scroll event listener set in mount cannot access Redux state updates
   state = {
     displayedCartoons: {},
-    height: 0,
     scrollHistory: 0,
-    currentCartoonBottom: 0
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('scroll', _.throttle(this.handleScroll, 200));
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('scroll', _.throttle(this.handleScroll, 200));
   }
 
   handleScroll = ( event ) => {
+      let scrollHeight = document.documentElement.offsetHeight + ( document.documentElement.scrollTop - document.documentElement.scrollHeight)
+
+      if ( scrollHeight < this.state.scrollHistory ) {
+        console.log('Up: ' + this.state.scrollHistory);
+      } else {
+        console.log('Down: ' + this.state.scrollHistory);
+      }
+      this.setState({scrollHistory: scrollHeight});
+
+  }
+
     // Check direction of scroll X
     // if down add more cartoons X
-    // if new cartoon set new route
-    // let scrollHeight = document.documentElement.offsetHeight - document.documentElement.scrollHeight - document.documentElement.scrollTop;
-    let scrollHeight = document.documentElement.offsetHeight + ( document.documentElement.scrollTop - document.documentElement.scrollHeight)
-    let currentDisplayedCartoon = this.props.currentDisplayedCartoon;
-    // - document.documentElement.scrollTop;
-    // let scrollHeight = document.documentElement.scrollHeight - document.documentElement.offsetHeight;
+    // if new cartoon set new
 
-    // console.log(this.refs.displayField.scrollTop);
+    // let scrollHeight = document.documentElement.offsetHeight + ( document.documentElement.scrollTop - document.documentElement.scrollHeight)
+    // let currentDisplayedCartoon = this.props.currentDisplayedCartoon;
+    // // let currentDisplayedCartoon = this.getCurrentDisplayedCartoon();
+    //
+    // if (scrollHeight < this.state.scrollHistory){
+    //   // Up
+    //   if ( currentDisplayedCartoon !== 1
+    //        && this.refs[`${currentDisplayedCartoon}`] !== undefined
+    //        && ( ( scrollHeight + 150 ) < ( document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight ) )
+    //        // && scrollHeight < (document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight)
+    //        // && (`${currentDisplayedCartoon - 1}` in this.state.displayedCartoons)
+    //      ){
+    //        // console.log( scrollHeight + 150 );
+    //        // console.log( document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight );
+    //        console.log( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight );
+    //        console.log( 'Up: ' + currentDisplayedCartoon );
+    //
+    //        // this.promise(this.props.onDisplayPreviousCartoon())
+    //        // .then(this.setRoute(this.props.currentDisplayedCartoon));
+    //        // console.log( currentDisplayedCartoon );
+    //        // scroll triggers again before this is updates
+    //
+    //        // Find if displayed cartoons contains previous cartoon
+    //         // If so change route
+    //        // console.log( 'Scroll Height: ' + scrollHeight );
+    //        // console.log( 'Container - Cartoon Height ' + (document.documentElement.offsetHeight - this.refs[`${ currentDisplayedCartoon }`].offsetHeight )  )
+    //        // console.log( 'Display Cartoon Height ' + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight)
+    //      }
+    // }
+    // else {
+    //   // Down
+    //   // First section checks if user has scrolled past container element bottom
+    //   // Adds new cartoons
+    //   // if ( currentDisplayedCartoon < this.props.lastCartoon) {
+    //   //   // if ( Math.floor(document.documentElement.scrollHeight - document.documentElement.scrollTop) === Math.ceil(document.documentElement.clientHeight) ) {
+    //   //   //   this.setDisplayedCartoons( currentDisplayedCartoon )
+    //   //   //   this.promise(this.props.onDisplayNextCartoon())
+    //   //   //   .then( this.setRoute( currentDisplayedCartoon ) );
+    //   //   // Second section
+    //   // }
+    //   // else {
+    //   //   // console.log( scrollHeight > this.refs[`${ currentDisplayedCartoon }`].offsetHeight );
+    //   //   // console.log( currentDisplayedCartoon );
+    //   // }
+    //     // else if (
+    //     //   // this.refs[`${currentDisplayedCartoon}`] !== undefined
+    //     //   scrollHeight > this.refs[`${ currentDisplayedCartoon }`].offsetHeight
+    //     // ) {
+    //     //     console.log('Existing cartoon true');
+    //     //   // this.promise(this.props.onDisplayNextCartoon())
+    //     //   // .then( this.setRoute( currentDisplayedCartoon ) );
+    //     //   // console.log( 'Down Old: ' + currentDisplayedCartoon );
+    //     //   // console.log( scrollHeight );
+    //     //   // console.log( this.refs[`${ currentDisplayedCartoon }`].offsetHeight );
+    //     // }
+    //   }
 
-    if (scrollHeight < this.state.scrollHistory){
-      // Up
-      if ( currentDisplayedCartoon !== 1 &&
-           this.refs[`${currentDisplayedCartoon}`] !== undefined &&
-           (scrollHeight + 100) < (document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight) &&
-           (`${currentDisplayedCartoon - 1}` in this.state.displayedCartoons)
-         ){
-           this.promise(this.props.onDisplayPreviousCartoon())
-           .then(this.setRoute(this.props.currentDisplayedCartoon));
-
-           // console.log( `${currentDisplayedCartoon - 1}` in this.state.displayedCartoons );
-           // Find if displayed cartoons contains previous cartoon
-            // If so change route
-
-         // (this.refs[`${ this.props.currentDisplayedCartoon }`]).offsetTop > this.refs.displayField.scrollHeight ){
-           console.log( 'Scroll Height: ' + scrollHeight );
-           console.log( 'Container - Cartoon Height ' + (document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight )  )
-           console.log( 'Display Cartoon Height ' + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight)
-           console.log( 'Document.DocumentElement Offset Height: ' + document.documentElement.offsetHeight  );
-           // + this.refs.displayField.offsetTop
-           // console.log((this.refs[`${ this.props.currentDisplayedCartoon }`]).offsetTop + this.refs.displayField.offsetTop + (this.refs[`${ this.props.currentDisplayedCartoon }`]).scrollHeight);
-           // console.log((this.refs[`${ this.props.currentDisplayedCartoon }`]).scrollHeight)
-           // console.log( (this.refs[`${ this.props.currentDisplayedCartoon }`]).offsetTop + this.refs.displayField.offsetTop  );
-           // console.log( this.refs.displayField.scrollHeight )
-           // this.promise(this.props.onDisplayPreviousCartoon())
-           // .then(this.setRoute(this.props.currentDisplayedCartoon));
-         }
-      // console.log(document.documentElement.scrollHeight);
-      // console.log(this.refs.displayField.offsetTop);
-    } else {
-      // Down
-      if (
-        this.props.currentDisplayedCartoon < this.props.lastCartoon &&
-        Math.floor(document.documentElement.scrollHeight - document.documentElement.scrollTop) === Math.ceil(document.documentElement.clientHeight)
-        // && !(`${currentDisplayedCartoon + 1}` in this.state.displayedCartoons)
-      ){
-        this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
-        this.promise(this.props.onDisplayNextCartoon())
-        .then(this.setRoute(this.props.currentDisplayedCartoon));
-      }
-      // else {
-      //   this.promise(this.props.onDisplayNextCartoon())
-      //   .then(this.setRoute(this.props.currentDisplayedCartoon));
-      // }
-    }
-    this.setState({scrollHistory: scrollHeight});
     // adds cartoons does not check current position of elements
-  }
+
+  //
+  // getCurrentDisplayedCartoon = () => {
+  //   return this.props.currentDisplayedCartoon;
+  // }
 
   componentDidUpdate( prevProps ) {
     // Redux not available until component did update
     // In these three if scenarios there is no applicable cartoon so it is set to lastCartoon
     if ( this.props.currentDisplayedCartoon === 0 ){
       if (
-        parseInt(this.props.match.params.id) === undefined ||
-        parseInt(this.props.match.params.id) <= 0 ||
-        parseInt(this.props.match.params.id) > this.props.lastCartoon ||
-        isNaN(this.props.match.params.id)
+        parseInt(this.props.match.params.id) === undefined
+        || parseInt(this.props.match.params.id) <= 0
+        || parseInt(this.props.match.params.id) > this.props.lastCartoon
+        || isNaN(this.props.match.params.id)
        ){
           this.props.onSetCurrentDisplayedCartoon(
             this.props.lastCartoon
@@ -114,9 +132,9 @@ class Display extends Component {
     }
 
     // Eliminates calls which will fail.
-    if ( prevProps.currentDisplayedCartoon !== this.props.currentDisplayedCartoon &&
-        this.props.currentDisplayedCartoon !== 0 &&
-        this.props.currentDisplayedCartoon <= this.props.lastCartoon ){
+    if ( prevProps.currentDisplayedCartoon !== this.props.currentDisplayedCartoon
+        && this.props.currentDisplayedCartoon !== 0
+        && this.props.currentDisplayedCartoon <= this.props.lastCartoon ){
           this.setDisplayedCartoons( this.props.currentDisplayedCartoon );
     }
   }
@@ -206,7 +224,6 @@ class Display extends Component {
   }
 
   setRoute = ( target ) => {
-    console.log(target);
     this.props.history.push(`/${ target }`);
   }
 
