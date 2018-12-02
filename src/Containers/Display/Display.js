@@ -32,36 +32,29 @@ class Display extends Component {
 
   handleScroll = ( event ) => {
       let scrollHeight = document.documentElement.offsetHeight + ( document.documentElement.scrollTop - document.documentElement.scrollHeight)
-      // this variable tends to break because of this.refs
-      // let currentCartoonTop = document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight;
-      // let currentDisplayedCartoon = this.props.currentDisplayedCartoon;
-      // Trigger repeatedly fires because calculation is done from bottom
 
       if ( scrollHeight < this.state.scrollHistory ) {
-        // Displays top of Cartoons present
-        // for ( let cartoon in this.state.displayedCartoons) {
-        //   console.log( this.refs[`${ cartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
-        // }
-        // console.log( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight )
-        // console.log( document.documentElement.scrollTop );
-
         // Up
         if ( this.props.currentDisplayedCartoon !== 1
            && this.props.currentDisplayedCartoon in this.state.displayedCartoons
-           && ( scrollHeight ) < ( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
+           && ( scrollHeight < this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
          ){
           this.promise(this.props.onDisplayPreviousCartoon())
           .then( this.setRoute( this.props.currentDisplayedCartoon ))
-        //     console.log(this.props.currentDisplayedCartoon),
-        //     console.log(currentCartoonTop),
-        //     console.log( document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight )
-        // );
-
-          console.log('Up: ' + this.state.scrollHistory);
         }
       } else {
         // Down
-        console.log('Down: ' + this.state.scrollHistory);
+        if ( this.props.currentDisplayedCartoon < this.props.lastCartoon
+          && ( scrollHeight > this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
+        ){
+          this.promise(this.props.onDisplayNextCartoon())
+          .then( this.setRoute( this.props.currentDisplayedCartoon ))
+        }
+        // for ( let cartoon in this.state.displayedCartoons ) {
+        //   console.log( this.refs[`${ cartoon }`].offsetHeight + this.refs[`${ cartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
+        // }
+        // console.log( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight )
+        // console.log( document.documentElement.scrollTop );
       }
       this.setState({scrollHistory: scrollHeight});
   }
@@ -80,29 +73,6 @@ class Display extends Component {
     // let currentDisplayedCartoon = this.props.currentDisplayedCartoon;
     //
     // if (scrollHeight < this.state.scrollHistory){
-    //   // Up
-    //   if ( currentDisplayedCartoon !== 1
-    //        && this.refs[`${currentDisplayedCartoon}`] !== undefined
-    //        && ( ( scrollHeight + 150 ) < ( document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight ) )
-    //        // && scrollHeight < (document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight)
-    //        // && (`${currentDisplayedCartoon - 1}` in this.state.displayedCartoons)
-    //      ){
-    //        // console.log( scrollHeight + 150 );
-    //        // console.log( document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight );
-    //        console.log( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight );
-    //        console.log( 'Up: ' + currentDisplayedCartoon );
-    //
-    //        // this.promise(this.props.onDisplayPreviousCartoon())
-    //        // .then(this.setRoute(this.props.currentDisplayedCartoon));
-    //        // console.log( currentDisplayedCartoon );
-    //        // scroll triggers again before this is updates
-    //
-    //        // Find if displayed cartoons contains previous cartoon
-    //         // If so change route
-    //        // console.log( 'Scroll Height: ' + scrollHeight );
-    //        // console.log( 'Container - Cartoon Height ' + (document.documentElement.offsetHeight - this.refs[`${ currentDisplayedCartoon }`].offsetHeight )  )
-    //        // console.log( 'Display Cartoon Height ' + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight)
-    //      }
     // }
     // else {
     //   // Down
