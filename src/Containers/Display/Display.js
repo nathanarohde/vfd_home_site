@@ -49,13 +49,14 @@ class Display extends Component {
           && !( this.props.currentDisplayedCartoon + 1 in this.state.displayedCartoons )
           &&  Math.ceil( scrollHeight ) > Math.ceil( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop )
         ){
-          console.log( this.props.currentDisplayedCartoon );
           this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
           this.promise(this.props.onDisplayNextCartoon())
           .then( this.setRoute( this.props.currentDisplayedCartoon ) );
         // For already existing cartoons
         } else if ( this.props.currentDisplayedCartoon + 1 in this.state.displayedCartoons
-            && scrollHeight > this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + document.documentElement.offsetHeight - this.refs.displayField.offsetHeight
+          // This will sometimes trigger when using the Previous button - the line below prevents error
+          && this.refs[`${ this.props.currentDisplayedCartoon }`] !== undefined
+          && scrollHeight > this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + document.documentElement.offsetHeight - this.refs.displayField.offsetHeight
         ){
           this.promise( this.props.onDisplayNextCartoon() )
           .then( this.setRoute( this.props.currentDisplayedCartoon ))
@@ -192,7 +193,7 @@ class Display extends Component {
     if (Object.keys(this.state.displayedCartoons).length){
       cartoons = Object.keys(this.state.displayedCartoons).map( cartoon => {
         return (
-          <div ref={cartoon} key={cartoon}>
+          <div className="displayedCartoon" ref={cartoon} key={cartoon}>
             <TitleBox date={ this.state.displayedCartoons[cartoon].date } title={ this.state.displayedCartoons[cartoon].title }/>
             <Cartoon key={ cartoon } source={ cartoon } />
           </div>
@@ -203,34 +204,38 @@ class Display extends Component {
     return (
       <div id="displayField" ref="displayField">
         { cartoons }
-        <div className="buttonFixedContainer">
-          <div className="buttonBox">
-            { this.props.currentDisplayedCartoon !== 1 &&
-              <Button
-                clicked={ this.firstCartoon }>
-                <Link to={`/${ 1 }`}>
-                  <img src={ chevron_first } alt="Previous Cartoon"/>
-                </Link>
-              </Button>
-            }
-            { this.props.currentDisplayedCartoon > 1 &&
-              <Button
-                clicked={ this.perviousCartoon }>
-                <Link to={`/${ this.props.currentDisplayedCartoon - 1 }`}>
-                  <img src={ chevron_up } alt="Previous Cartoon"/>
-                </Link>
-              </Button>
-            }
-            { this.props.currentDisplayedCartoon < this.props.lastCartoon  &&
-              <Button
-                clicked={ this.nextCartoon }>
-                <Link to={`/${ this.props.currentDisplayedCartoon + 1 }`}>
-                  <img src={ chevron_down } alt="Next Cartoon"/>
-                </Link>
-              </Button>
-            }
+        { this.refs.displayField !== undefined 
+          && this.state.scrollHistory > this.refs.displayField.offsetTop
+          &&
+          <div className="buttonFixedContainer">
+            <div className="buttonBox">
+              { this.props.currentDisplayedCartoon !== 1 &&
+                <Button
+                  clicked={ this.firstCartoon }>
+                  <Link to={`/${ 1 }`}>
+                    <img src={ chevron_first } alt="Previous Cartoon"/>
+                  </Link>
+                </Button>
+              }
+              { this.props.currentDisplayedCartoon > 1 &&
+                <Button
+                  clicked={ this.perviousCartoon }>
+                  <Link to={`/${ this.props.currentDisplayedCartoon - 1 }`}>
+                    <img src={ chevron_up } alt="Previous Cartoon"/>
+                  </Link>
+                </Button>
+              }
+              { this.props.currentDisplayedCartoon < this.props.lastCartoon  &&
+                <Button
+                  clicked={ this.nextCartoon }>
+                  <Link to={`/${ this.props.currentDisplayedCartoon + 1 }`}>
+                    <img src={ chevron_down } alt="Next Cartoon"/>
+                  </Link>
+                </Button>
+              }
+            </div>
           </div>
-        </div>
+        }
       </div>
     )
   }

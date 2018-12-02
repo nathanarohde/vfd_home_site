@@ -16,6 +16,10 @@
   margin: .5rem 0;
 }
 
+.displayedCartoon {
+  min-height: 700px;
+}
+
 .buttonFixedContainer {
   width: 100%;
   position: fixed;
