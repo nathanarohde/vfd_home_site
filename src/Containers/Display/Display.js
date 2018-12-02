@@ -32,15 +32,45 @@ class Display extends Component {
 
   handleScroll = ( event ) => {
       let scrollHeight = document.documentElement.offsetHeight + ( document.documentElement.scrollTop - document.documentElement.scrollHeight)
+      // this variable tends to break because of this.refs
+      // let currentCartoonTop = document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight;
+      // let currentDisplayedCartoon = this.props.currentDisplayedCartoon;
+      // Trigger repeatedly fires because calculation is done from bottom
 
       if ( scrollHeight < this.state.scrollHistory ) {
-        console.log('Up: ' + this.state.scrollHistory);
+        // Displays top of Cartoons present
+        // for ( let cartoon in this.state.displayedCartoons) {
+        //   console.log( this.refs[`${ cartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
+        // }
+        // console.log( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight )
+        // console.log( document.documentElement.scrollTop );
+
+        // Up
+        if ( this.props.currentDisplayedCartoon !== 1
+           && this.props.currentDisplayedCartoon in this.state.displayedCartoons
+           && ( scrollHeight ) < ( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
+         ){
+          this.promise(this.props.onDisplayPreviousCartoon())
+          .then( this.setRoute( this.props.currentDisplayedCartoon ))
+        //     console.log(this.props.currentDisplayedCartoon),
+        //     console.log(currentCartoonTop),
+        //     console.log( document.documentElement.offsetHeight - this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight )
+        // );
+
+          console.log('Up: ' + this.state.scrollHistory);
+        }
       } else {
+        // Down
         console.log('Down: ' + this.state.scrollHistory);
       }
       this.setState({scrollHistory: scrollHeight});
-
   }
+
+  // getDisplayedCartoonDimensions = () => {
+  //   let displayedCartoonsDimensions = this.props.displayedCartoons;
+  //
+  //   return displayedCartoonsDimensions
+  // }
 
     // Check direction of scroll X
     // if down add more cartoons X
@@ -48,7 +78,6 @@ class Display extends Component {
 
     // let scrollHeight = document.documentElement.offsetHeight + ( document.documentElement.scrollTop - document.documentElement.scrollHeight)
     // let currentDisplayedCartoon = this.props.currentDisplayedCartoon;
-    // // let currentDisplayedCartoon = this.getCurrentDisplayedCartoon();
     //
     // if (scrollHeight < this.state.scrollHistory){
     //   // Up
