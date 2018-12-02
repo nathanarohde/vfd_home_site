@@ -43,21 +43,21 @@ class Display extends Component {
           .then( this.setRoute( this.props.currentDisplayedCartoon ))
         }
       } else {
-        console.log( Math.ceil( scrollHeight + this.refs.displayField.offsetTop + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop ) > Math.floor( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + this.refs.displayField.offsetTop ) )
         // Down
+        // For cartoons that don't exist
         if ( this.props.currentDisplayedCartoon < this.props.lastCartoon
           && !( this.props.currentDisplayedCartoon + 1 in this.state.displayedCartoons )
-          && Math.floor(document.documentElement.scrollHeight - document.documentElement.scrollTop) === Math.ceil(document.documentElement.clientHeight)
-          // && Math.ceil( scrollHeight + this.refs.displayField.offsetTop + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop ) > Math.floor( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + this.refs.displayField.offsetTop )
+          &&  Math.ceil( scrollHeight ) > Math.ceil( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop )
         ){
-          console.log( this.props.currentDisplayedCartoon + 1 );
-            this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
-            this.promise(this.props.onDisplayNextCartoon())
-            .then( this.setRoute( this.props.currentDisplayedCartoon ) );
+          console.log( this.props.currentDisplayedCartoon );
+          this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
+          this.promise(this.props.onDisplayNextCartoon())
+          .then( this.setRoute( this.props.currentDisplayedCartoon ) );
+        // For already existing cartoons
         } else if ( this.props.currentDisplayedCartoon + 1 in this.state.displayedCartoons
             && scrollHeight > this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + document.documentElement.offsetHeight - this.refs.displayField.offsetHeight
         ){
-          this.promise(this.props.onDisplayNextCartoon())
+          this.promise( this.props.onDisplayNextCartoon() )
           .then( this.setRoute( this.props.currentDisplayedCartoon ))
         }
       }
