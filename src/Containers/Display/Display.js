@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import axios from 'axios';
-import _ from 'lodash';
+import lodash from 'lodash';
 
 import chevron_first from '../../Assets/chevron-first.svg';
 import chevron_up from '../../Assets/chevron-up.svg';
@@ -16,13 +16,20 @@ import { Link } from 'react-router-dom';
 import * as actions from '../../Store/actions';
 
 class Display extends Component {
-  state = {
-    displayedCartoons: {},
-    scrollHistory: 0,
+  constructor(props){
+    super(props);
+    this.state = {
+      displayedCartoons: {},
+      scrollHistory: 0,
+    }
+    // Prevents memory leak
+    this.throttledFunction = lodash.throttle(this.handleScroll, 200);
   }
 
+
+
   componentDidMount() {
-    window.addEventListener('scroll', _.throttle(this.handleScroll, 200));
+    window.addEventListener('scroll', this.throttledFunction, false);
     // Necessary for Archive to work properly
     if ( parseInt(this.props.match.params.id) > 0 ) {
       this.setDisplayedCartoons( parseInt(this.props.match.params.id) );
@@ -40,7 +47,7 @@ class Display extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', _.throttle(this.handleScroll, 200));
+    window.removeEventListener('scroll', this.throttledFunction, false);
   }
 
   handleScroll = () => {
