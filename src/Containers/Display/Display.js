@@ -37,7 +37,7 @@ class Display extends Component {
         // Up
         if ( this.props.currentDisplayedCartoon !== 1
            && this.props.currentDisplayedCartoon - 1 in this.state.displayedCartoons
-           && ( scrollHeight < this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
+           && ( scrollHeight + 100 < this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + ( document.documentElement.offsetHeight - this.refs.displayField.offsetHeight ) )
          ){
           this.promise(this.props.onDisplayPreviousCartoon())
           .then( this.setRoute( this.props.currentDisplayedCartoon ))
@@ -134,28 +134,14 @@ class Display extends Component {
     let container = this.refs.displayField;
     let target = this.refs[`${ this.props.currentDisplayedCartoon - 1 }`] || 0;
 
-    if (target === 0) {
-      this.promise( this.props.onDisplayPreviousCartoon() )
-      .then( this.scrollToContainerTop(container), this.setRoute( this.props.currentDisplayedCartoon - 1) )
-    } else {
-      this.promise( this.props.onDisplayPreviousCartoon() )
-      .then( this.scrollToCartoonTop(target, container), this.setRoute( this.props.currentDisplayedCartoon - 1) )
-    }
+    this.promise( this.props.onDisplayPreviousCartoon() )
+    .then( this.scrollToCartoonTop(target, container), this.setRoute( this.props.currentDisplayedCartoon - 1) )
   }
 
   scrollToCartoonTop = (target, container) => {
     setTimeout( function() {
       window.scrollTo({
         top: target.offsetTop + container.offsetTop,
-        behavior: 'auto'
-      });
-    }, 100);
-  }
-
-  scrollToContainerTop = (container) => {
-    setTimeout( function() {
-      window.scrollTo({
-        top: container.offsetTop,
         behavior: 'auto'
       });
     }, 100);
@@ -173,8 +159,6 @@ class Display extends Component {
         })
       }, 200)
     );
-      console.log('next cartoon doesnt position next load well')
-      // should add place holding container
   }
 
   setRoute = ( target ) => {
@@ -204,7 +188,7 @@ class Display extends Component {
     return (
       <div id="displayField" ref="displayField">
         { cartoons }
-        { this.refs.displayField !== undefined 
+        { this.refs.displayField !== undefined
           && this.state.scrollHistory > this.refs.displayField.offsetTop
           &&
           <div className="buttonFixedContainer">
