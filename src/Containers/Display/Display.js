@@ -71,7 +71,7 @@ class Display extends Component {
           && !( this.props.currentDisplayedCartoon + 1 in this.state.displayedCartoons )
           // Undefined prevents errors when transferring from archive.
           && this.refs[`${ this.props.currentDisplayedCartoon }`] !== undefined
-          && Math.ceil( scrollHeight + 150 )
+          && Math.ceil( scrollHeight )
               > Math.ceil( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop )
         ){
           this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
