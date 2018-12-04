@@ -1,14 +1,51 @@
 nav.Wrapper {
- margin: 48px 0 24px 0;
+ margin: 60px 0 24px 0;
 }
 
 nav a {
-  color: #333;
+  color: #fcf2cb;
+  display: inline-block;
   font-family: 'Smythe', 'open-sans', 'Arial', 'Verdana';
   font-size: 36px;
-  margin: 0 36px;
+  padding-top: 5px;
 }
 
 nav a:visited {
-  color: #333;
+  color: #fcf2cb;
+}
+
+.circusSign {
+  background-color: #1e4363;
+  display: inline-block;
+  margin: 24px 48px;
+  position: relative;
+  height: 60px;
+  width: 120px;
+  z-index: 10;
+}
+
+.circusSign:before {
+  background-color: #1e4363;
+  content:'';
+  position: absolute;
+  border-radius: 40px;
+  transform: rotate(90deg);
+  height: 150px;
+  width: 40px;
+  top: -46px;
+  left: 40px;
+  z-index: -1;
+}
+
+.circusSign:after {
+  background-color: #8a2d19;
+  content:'';
+  position: absolute;
+  border: 6px solid #1e4363;
+  transform: rotate(45deg);
+  height: 90px;
+  width: 90px;
+  left: 10px;
+  top: -20px;
+  z-index: -1;
 }

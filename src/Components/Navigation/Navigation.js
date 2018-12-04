@@ -4,8 +4,12 @@ import './Navigation.css'
 
 const navigation = () => (
   <nav className="Wrapper">
-    <Link to="/">Home</Link>
-    <Link to="/archive">Archive</Link>
+    <div className="circusSign">
+      <Link to="/">Home</Link>
+    </div>
+    <div className="circusSign">
+      <Link to="/archive">Archive</Link>
+    </div>
   </nav>
 )
 

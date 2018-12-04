@@ -12,7 +12,7 @@
 }
 
 .bannerBackground .Wrapper {
-  /* For IE 9 & older  */
+  /* For IE 9 & older must be infront of other commands  */
   background: #1e4363;
   background: repeating-linear-gradient(
     to right,
@@ -23,17 +23,37 @@
   );
   box-sizing: border-box;
   height: 100%;
-  padding-top: 32px;
+  padding-top: 16px;
 }
 
 .bannerBackground h1 {
+  box-sizing: border-box;
   filter: drop-shadow(4px 5px 4px #0A1620);
   color: #fcf2cb;
+  display:inline-block;
   font-family: 'Smythe', 'open-sans', 'Arial', 'Verdana';
-  font-size: 64px;
+  font-size: 59px;
   letter-spacing: 3px;
-  margin: 0 0 0 32px;
+  margin: 0;
+  padding: 0 16px;
   text-align: left;
+  vertical-align: top;
+  width: 75%;
+}
+
+.logo-title-box {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 0 16px 16px 16px;
+}
+
+.logo {
+  filter: drop-shadow(4px 5px 4px #0A1620);
+  width: 25%;
+  max-height: 150px;
+  max-width: 180px;
+  z-index: 4;
 }
 
 .emphasizeBannerTitle {
@@ -56,8 +76,41 @@
     background-color: #8a2d19;
 }
 
-@media (min-width:600px) {
+@media (min-width:800px) {
   .bannerBackground {
     height: 180px;
   }
 }
+
+@media (max-width: 799px){
+  .bannerBackground h1 {
+    text-align: center;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 700px) {
+  .logo {
+    width: 35%;
+  }
+  .bannerBackground h1 {
+    font-size: 48px;
+    width: 65%;
+  }
+}
+
+@media (max-width: 600px) {
+  .bannerBackground h1 {
+    display: none;
+    width: 0%;
+  }
+  .logo {
+    width: 100%;
+  }
+}
+
+/* @media (max-width: 500px) {
+  .bannerBackground h1 {
+    font-size: 40px;
+    padding: 16px;
+  }
+} */

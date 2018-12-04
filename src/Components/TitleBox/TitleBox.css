@@ -1,3 +1,8 @@
 .titleBox {
   padding: 24px 0;
 }
+
+p {
+  font-size: 24px;
+  margin-top: 12px;
+}
