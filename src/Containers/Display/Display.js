@@ -65,14 +65,6 @@ class Display extends Component {
           .then( this.setRoute( this.props.currentDisplayedCartoon ))
         }
       } else {
-        console.log('Scroll Height ' + scrollHeight);
-        console.log('Calculated' + Math.ceil( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop ))
-        console.log(this.props.currentDisplayedCartoon);
-        // console.log('Calculated target ' + (this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop + document.documentElement.offsetHeight - this.refs.displayField.offsetHeight))
-        // console.log('Displayed cartoon offset ' + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight)
-        // console.log('Displayed cartoon offset top ' + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop)
-        // console.log('Document offset ' + document.documentElement.offsetHeight)
-        // console.log('Display Field offset ' + this.refs.displayField.offsetHeight)
         // Down
         // For cartoons that don't exist
         if ( this.props.currentDisplayedCartoon < this.props.lastCartoon
