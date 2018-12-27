@@ -74,7 +74,7 @@ class Display extends Component {
           && Math.ceil( scrollHeight )
               > Math.ceil( this.refs[`${ this.props.currentDisplayedCartoon }`].offsetHeight + this.refs[`${ this.props.currentDisplayedCartoon }`].offsetTop )
         ){
-          this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 )
+          this.promise( this.setDisplayedCartoons( this.props.currentDisplayedCartoon + 1 ) )
           this.promise(this.props.onDisplayNextCartoon())
           .then( this.setRoute( this.props.currentDisplayedCartoon ) );
         // For already existing cartoons
